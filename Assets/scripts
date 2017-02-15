@@ -1,0 +1,7 @@
+REMOVE IMAGES
+
+import bpy
+
+for image in bpy.data.images:
+    if not image.users:
+        bpy.data.images.remove(image)
