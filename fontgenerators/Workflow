@@ -1,0 +1,22 @@
+How to work with bmfont?
+
+Star bmfont64.exe (with wine on Linux system)
+Select in the bmfont all characters you need
+Options -> Save as bitmap font as...
+Give a name for your font file, with *.fnt as file extension
+
+You see two or more generated files:
+	- filename.fnt
+	- filename_0.tga
+	- ...
+	- filename_n.tga
+
+Open the tga-image with gimp. Add alpha chanel and remove black color from image. Save image as png.
+Do the same for all other *.tga files
+As last open the fnt-file, find lines with 
+	page id=0 file="filename_0.tga"
+	page id=1 file="filename_1.tga"
+	page id=... file="...tga"
+	page id=n file="filename_n.tga"
+Replace all .tga with .png
+Save you are done!
