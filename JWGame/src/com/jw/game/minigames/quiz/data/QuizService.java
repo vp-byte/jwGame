@@ -31,16 +31,6 @@ public class QuizService {
         return quizs;
     }
 
-    public List<Quiz> getAllQuizByDifficulty(Difficulty difficulty) {
-        List<Quiz> quizs = new ArrayList<>();
-        for (Quiz quiz : quizlist) {
-            if (quiz.getDifficulty() == difficulty) {
-                quizs.add(quiz);
-            }
-        }
-        return quizs;
-    }
-
     public List<Quiz> loadFromFile() {
         // TODO load data from file (win/linux/mac/android)
         return parseLineList(QuizData.lines());

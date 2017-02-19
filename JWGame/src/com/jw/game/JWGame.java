@@ -35,13 +35,13 @@ public class JWGame extends SimpleApplication implements ScreenController {
         Spatial blueflower = assetManager.loadModel("Models/plants/blueflower/blueflower.j3o");
         blueflower.setName("blueflower");
         rootNode.attachChild(blueflower);
-              
-        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager,
+            /*  
+       NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager,
                 inputManager,
                 audioRenderer,
                 guiViewPort);
         Nifty nifty = niftyDisplay.getNifty();
-        nifty.fromXml("Interface/quiz/quiz.xml", "start", this);
+        nifty.fromXml("Interface/quiz/quiz.xml", "quizScreen", this);
 
         // attach the nifty display to the gui view port as a processor
         guiViewPort.addProcessor(niftyDisplay);
@@ -50,15 +50,16 @@ public class JWGame extends SimpleApplication implements ScreenController {
 //        flyCam.setEnabled(false);
 //        flyCam.setDragToRotate(true);
         inputManager.setCursorVisible(true);
+         */
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-//        if(!test) {
-//            test = true;
-//            stateManager.detach(mainScene);
-//            stateManager.attach(quizScene);
-//        }
+        if(!test) {
+            test = true;
+            stateManager.detach(mainScene);
+            stateManager.attach(quizScene);
+        }
     }
 
     @Override
