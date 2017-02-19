@@ -35,8 +35,7 @@ public class JWGame extends SimpleApplication implements ScreenController {
         Spatial blueflower = assetManager.loadModel("Models/plants/blueflower/blueflower.j3o");
         blueflower.setName("blueflower");
         rootNode.attachChild(blueflower);
-        
-/*        
+              
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager,
                 inputManager,
                 audioRenderer,
@@ -50,7 +49,7 @@ public class JWGame extends SimpleApplication implements ScreenController {
         // disable the fly cam
 //        flyCam.setEnabled(false);
 //        flyCam.setDragToRotate(true);
-        inputManager.setCursorVisible(true);*/
+        inputManager.setCursorVisible(true);
     }
 
     @Override
