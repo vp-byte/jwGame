@@ -6,16 +6,20 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
-import com.jme3.audio.AudioRenderer;
 import com.jme3.input.InputManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jw.game.minigames.quiz.data.Difficulty;
+import com.jw.game.minigames.quiz.data.Quiz;
+import com.jw.game.minigames.quiz.data.QuizService;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.controls.Button;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import java.util.Collections;
+import java.util.List;
 
 public class QuizScene extends AbstractAppState implements ScreenController {
 
@@ -27,9 +31,13 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     private Spatial scene;
     private Nifty nifty;
     private Screen screen;
+    private QuizService quizService;
+    private List<Quiz> quizlist = null;
 
     public QuizScene(Nifty nifty) {
         this.nifty = nifty;
+        this.quizService = new QuizService();
+        this.quizlist = this.quizService.getAllQuizByDifficulty(Difficulty.values());
     }
 
     @Override
@@ -45,13 +53,13 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         nifty.fromXml("Interface/quiz/quiz.xml", "quizScreen", this);
         this.app.getFlyByCamera().setEnabled(false);
         inputManager.setCursorVisible(true);
+        setQuiz(nextQuiz());
     }
 
     private void addScene() {
         scene = assetManager.loadModel(QuizData.quizSceneAsset());
         scene.setName(MainData.mainSceneSpartial());
         this.rootNode.attachChild(scene);
-
     }
 
     @Override
@@ -68,21 +76,58 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     @Override
     public void bind(Nifty nifty, Screen screen) {
         this.screen = screen;
-        System.out.println("bind( " + screen.getScreenId() + ")");
     }
 
     @Override
     public void onStartScreen() {
-        System.out.println("onStartScreen");
     }
 
     @Override
     public void onEndScreen() {
-        System.out.println("onEndScreen");
     }
 
     public void answer(String answer) {
-        Element textField = this.screen.findElementByName("quizText");
-        textField.getRenderer(TextRenderer.class).setText(answer);
+        Quiz quiz = quizlist.get(0);
+        if (answer.equalsIgnoreCase(quiz.getRight().name())) {
+            // TODO play congratulation cinematics
+            System.err.println("play congratulation cinematics");
+            if (quizlist.size() >= 1) {
+                removeQuizFromList(quizlist.get(0));
+                setQuiz(nextQuiz());
+            } else {
+                System.err.println("Game over");
+                // TODO game over
+            }
+        } else {
+            // TODO play wrong answer cinematics
+            System.err.println("play wrong answer cinematics");
+        }
+    }
+
+    private Quiz nextQuiz() {
+        Collections.shuffle(quizlist);
+        return quizlist.get(0);
+    }
+
+    private void setQuiz(Quiz quiz) {
+        setQuizText(quiz.getQuestion());
+        setButtonText("buttonA", quiz.getAnswer_a());
+        setButtonText("buttonB", quiz.getAnswer_b());
+        setButtonText("buttonC", quiz.getAnswer_c());
+        setButtonText("buttonD", quiz.getAnswer_d());
+    }
+
+    private void setQuizText(String text) {
+        Element textField = screen.findElementByName("quizText");
+        textField.getRenderer(TextRenderer.class).setText(text);
+    }
+
+    private void setButtonText(String buttonId, String text) {
+        Button button = screen.findNiftyControl(buttonId, Button.class);
+        button.setText(buttonId.charAt(buttonId.length() - 1) + ". " + text);
+    }
+
+    private void removeQuizFromList(Quiz quiz) {
+        quizlist.remove(quiz);
     }
 }
