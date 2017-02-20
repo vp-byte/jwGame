@@ -2,7 +2,7 @@
 <nifty xmlns="http://nifty-gui.sourceforge.net/nifty-1.3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty-1.3.xsd http://nifty-gui.sourceforge.net/nifty-1.3.xsd">
     <useStyles filename="nifty-default-styles.xml" />
     <useControls filename="nifty-default-controls.xml" />
-    <screen id="quizScreen" controller="com.jw.game.JWGame">
+    <screen id="quizScreen" controller="com.jw.game.minigames.quiz.QuizScene">
         <layer id="quizLayer" childLayout="vertical">
             <panel id="qiuzPanelTopSpace" height="10%" width="100%" align="center">
             </panel>
@@ -16,11 +16,13 @@
                     <panel id="quizPanelBottomTopLeft" height="100%" width="50%" valign="center" childLayout="center">
                         <control id="buttonA" width="50%" height="60%" name="button" align="center" valign="center"
                                  label="A">
+                            <interact onClick="answer(A)" />
                         </control>
                     </panel>
                     <panel id="quizPanelBottomTopRight" height="100%" width="50%" valign="center" childLayout="center">
                         <control id="buttonB" width="50%" height="60%" name="button" align="center" valign="center"
                                  label="B">
+                            <interact onClick="answer(B)" />
                         </control>
                     </panel>               
                 </panel>
@@ -28,11 +30,13 @@
                     <panel id="quizPanelBottomBootomLeft" height="100%" width="50%" valign="center" childLayout="center">
                         <control id="buttonC" width="50%" height="60%" name="button" align="center" valign="center"
                                  label="C">
+                            <interact onClick="answer(C)" />
                         </control>
                     </panel>
                     <panel id="quizPanelBottomBottomRight" height="100%" width="50%" valign="center" childLayout="center">
                         <control id="buttonD" width="50%" height="60%" name="button" align="center" valign="center"
                                  label="D">
+                            <interact onClick="answer(D)" />
                         </control>
                     </panel>   
                 </panel>

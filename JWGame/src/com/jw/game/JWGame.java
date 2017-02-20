@@ -1,7 +1,6 @@
 package com.jw.game;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.bullet.BulletAppState;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Spatial;
@@ -28,20 +27,20 @@ public class JWGame extends SimpleApplication implements ScreenController {
     @Override
     public void simpleInitApp() {
         mainScene = new MainScene();
-        quizScene = new QuizScene();
 
         stateManager.attach(mainScene);
 
         Spatial blueflower = assetManager.loadModel("Models/plants/blueflower/blueflower.j3o");
         blueflower.setName("blueflower");
         rootNode.attachChild(blueflower);
-            /*  
-       NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager,
+
+        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager,
                 inputManager,
                 audioRenderer,
                 guiViewPort);
         Nifty nifty = niftyDisplay.getNifty();
-        nifty.fromXml("Interface/quiz/quiz.xml", "quizScreen", this);
+        quizScene = new QuizScene(nifty);
+//        nifty.fromXml("Interface/quiz/quiz.xml", "quizScreen", this);
 
         // attach the nifty display to the gui view port as a processor
         guiViewPort.addProcessor(niftyDisplay);
@@ -50,12 +49,12 @@ public class JWGame extends SimpleApplication implements ScreenController {
 //        flyCam.setEnabled(false);
 //        flyCam.setDragToRotate(true);
         inputManager.setCursorVisible(true);
-         */
+
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-        if(!test) {
+        if (!test) {
             test = true;
             stateManager.detach(mainScene);
             stateManager.attach(quizScene);
