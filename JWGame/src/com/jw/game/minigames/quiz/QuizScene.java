@@ -7,6 +7,7 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.InputManager;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jw.game.minigames.quiz.data.Difficulty;
@@ -24,7 +25,6 @@ import java.util.List;
 public class QuizScene extends AbstractAppState implements ScreenController {
 
     private SimpleApplication app;
-    private AppStateManager stateManager;
     private AssetManager assetManager;
     private InputManager inputManager;
     private Node rootNode;
@@ -44,7 +44,6 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
         this.app = (SimpleApplication) app;
-        this.stateManager = this.app.getStateManager();
         this.assetManager = this.app.getAssetManager();
         this.inputManager = this.app.getInputManager();
         this.rootNode = this.app.getRootNode();
@@ -54,6 +53,8 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         this.app.getFlyByCamera().setEnabled(false);
         inputManager.setCursorVisible(true);
         setQuiz(nextQuiz());
+        
+        this.app.getCamera().setLocation(new Vector3f(0f, 1.2f, -2.85f));
     }
 
     private void addScene() {
