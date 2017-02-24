@@ -2,20 +2,26 @@
 <nifty xmlns="http://nifty-gui.sourceforge.net/nifty-1.3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty-1.3.xsd http://nifty-gui.sourceforge.net/nifty-1.3.xsd">
     <useStyles filename="nifty-default-styles.xml" />
     <useControls filename="nifty-default-controls.xml" />
-    <controlDefinition style="nifty-button"
-                       name="quizbutton" 
-                       controller="de.lessvoid.nifty.controls.button.ButtonControl" 
-                       inputMapping="de.lessvoid.nifty.input.mapping.MenuInputMapping"> 
-        <panel style="#panel" focusable="true"> 
+    <style id="quizbuttonStyle">
+        <attributes width="100%" height="100%" padding="5px" backgroundColor="#fff0" childLayout="center" />
+    </style>
+    <controlDefinition style="quizbuttonStyle" name="quizbutton" 
+                       controller="de.lessvoid.nifty.controls.button.ButtonControl" inputMapping="de.lessvoid.nifty.input.mapping.MenuInputMapping">
+        <panel style="#panel" focusable="true">
             <image width="100%" height="100%" childLayout="center" filename="Interface/quiz/button.png" imageMode="resize:15,2,15,15,15,2,15,2,15,2,15,15" >
-                <text id="#text" font="Interface/Fonts/bmfont.fnt" style="#text" text="$label"/> 
+                <text id="#text" font="Interface/Fonts/bmfont.fnt" style="#text" text="$label"/>
+                <effect>
+                    <onHover name="textSize" maxSize="60%" active="Interface/quiz/buttonHover.png" inactive="Interface/quiz/button.png">
+                        <hover hoverFalloffType="linear" hoverFalloffConstraint="both" hoverWidth="100%" hoverHeight="100%" />
+                    </onHover>
+                    <onHover name="changeImage" active="Interface/quiz/buttonHover.png" inactive="Interface/quiz/button.png" imageMode="resize:15,2,15,15,15,2,15,2,15,2,15,15" />
+                </effect>
             </image>
-        </panel> 
+        </panel>
     </controlDefinition>
     <screen id="quizScreen" controller="com.jw.game.minigames.quiz.QuizScene">
         <layer id="quizLayer" childLayout="vertical">
-            <panel id="qiuzPanelTopSpace" height="15%" width="100%" align="center">
-            </panel>
+            <panel id="qiuzPanelTopSpace" height="15%" width="100%" align="center" />
             <panel id="qiuzPanelCenter" height="40%" width="40%" align="center" childLayout="vertical">
                 <text id="quizText" width="100%" height="100%" textVAlign="top" textHAlign="center" wrap="true"
                       font="Interface/Fonts/bmfont.fnt" text="Question" />
@@ -24,22 +30,19 @@
             <panel id="quizPanelBottom" height="25%" width="100%" align="center" childLayout="vertical">
                 <panel id="quizPanelBottomTop" height="50%" width="100%" align="center" childLayout="horizontal">
                     <panel id="quizPanelBottomTopLeft" height="100%" width="50%" valign="center" childLayout="center">
-                        <control id="buttonA" width="50%" height="60%" name="quizbutton" align="right" valign="center"
-                                 label="A">
+                        <control id="buttonA" width="50%" height="60%" name="quizbutton" align="right" valign="center" label="A">
                             <interact onClick="answer(A)" />
                         </control>
                     </panel>
                     <panel id="quizPanelBottomTopRight" height="100%" width="50%" valign="center" childLayout="center">
-                        <control id="buttonB" width="50%" height="60%" name="quizbutton" align="left" valign="center"
-                                 label="B">
+                        <control id="buttonB" width="50%" height="60%" name="quizbutton" align="left" valign="center" label="B">
                             <interact onClick="answer(B)" />
                         </control>
-                    </panel>               
+                    </panel>
                 </panel>
                 <panel id="quizPanelBottomBottom" height="50%" width="100%" align="center" childLayout="horizontal">
                     <panel id="quizPanelBottomBootomLeft" height="100%" width="50%" valign="center" childLayout="center">
-                        <control id="buttonC" width="50%" height="60%" name="quizbutton" align="right" valign="center"
-                                 label="C">
+                        <control id="buttonC" width="50%" height="60%" name="quizbutton" align="right" valign="center" label="C">
                             <interact onClick="answer(C)" />
                         </control>
                     </panel>
@@ -48,7 +51,7 @@
                                  label="D">
                             <interact onClick="answer(D)" />
                         </control>
-                    </panel>   
+                    </panel>
                 </panel>
             </panel>
         </layer>
