@@ -115,7 +115,7 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         setButtonText("buttonA", quiz.getAnswer_a());
         setButtonText("buttonB", quiz.getAnswer_b());
         setButtonText("buttonC", quiz.getAnswer_c());
-        setButtonText("buttonD", quiz.getAnswer_d());
+        setButtonText("buttonD", quiz.getAnswer_d());        
     }
 
     private void setQuizText(String text) {
@@ -125,7 +125,7 @@ public class QuizScene extends AbstractAppState implements ScreenController {
 
     private void setButtonText(String buttonId, String text) {
         Button button = screen.findNiftyControl(buttonId, Button.class);
-        button.setText(buttonId.charAt(buttonId.length() - 1) + ". " + text);
+        button.setText(text);
     }
 
     private void removeQuizFromList(Quiz quiz) {
