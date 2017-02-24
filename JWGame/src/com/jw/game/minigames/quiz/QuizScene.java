@@ -111,11 +111,12 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     }
 
     private void setQuiz(Quiz quiz) {
+        /*
         setQuizText(quiz.getQuestion());
         setButtonText("buttonA", quiz.getAnswer_a());
         setButtonText("buttonB", quiz.getAnswer_b());
         setButtonText("buttonC", quiz.getAnswer_c());
-        setButtonText("buttonD", quiz.getAnswer_d());        
+        setButtonText("buttonD", quiz.getAnswer_d());        */
     }
 
     private void setQuizText(String text) {
