@@ -29,9 +29,9 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     private InputManager inputManager;
     private Node rootNode;
     private Spatial scene;
-    private Nifty nifty;
+    private final Nifty nifty;
     private Screen screen;
-    private QuizService quizService;
+    private final QuizService quizService;
     private List<Quiz> quizlist = null;
 
     public QuizScene(Nifty nifty) {
@@ -53,7 +53,7 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         this.app.getFlyByCamera().setEnabled(false);
         inputManager.setCursorVisible(true);
         setQuiz(nextQuiz());
-        
+
         this.app.getCamera().setLocation(new Vector3f(0f, 1.2f, -2.85f));
     }
 
@@ -119,12 +119,22 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     }
 
     private void setQuizText(String text) {
-        Element textField = screen.findElementByName("quizText");
-        textField.getRenderer(TextRenderer.class).setText(text);
+        Element textField = screen.findElementById("quizText");
+        if (textField == null) {
+            throw new IllegalStateException("TextField with id=quizText not found");
+        }
+        TextRenderer textRenderer = textField.getRenderer(TextRenderer.class);
+        if (textRenderer == null) {
+            throw new IllegalStateException("TextRenderer from quizText not found");
+        }
+        textRenderer.setText(text);
     }
 
     private void setButtonText(String buttonId, String text) {
         Button button = screen.findNiftyControl(buttonId, Button.class);
+        if (button == null) {
+            throw new IllegalStateException("Button with id=" + buttonId + " not found");
+        }
         button.setText(text);
     }
 

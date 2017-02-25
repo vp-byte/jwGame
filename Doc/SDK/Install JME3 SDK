@@ -1,0 +1,4 @@
+First download SDK from https://github.com/jMonkeyEngine/sdk/releases
+go to downlad dir and make jme*.sh bash executable with chmode +x  jmonkeyplatform-linux-x64.sh
+
+You need rights to execute jdk set this rights in the jmefolder with chmode +x */* 
