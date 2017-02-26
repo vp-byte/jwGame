@@ -1,0 +1,3837 @@
+Nifty 1.4.0 Changes
+===================
+
+* jogamp.version: 2.1.5-01
+
+* fix: wrong nifty-lwjgl-renderer version
+
+* Merge pull request #241 from mkaring/1.4
+
+Changed search for a droppable
+
+* jglfont-core-1.4 added
+
+* Stop the search for droppables in case a element that consumes (is visible to) mouse events is located covering any other droppable
+
+* use pgp-maven-plugin instead of gpg-maven-plugin for release signing
+
+* fix(jogl): missing shader files added and unused shaders removed (core)
+
+* fix(jogl): removed getGL2() for some GL calls
+
+* Merge pull request #240 from 3xp0n3nt/fix-broken-build
+
+Fix broken build from JGLFontRenderer API change.
+
+* Fix broken build from JGLFontRenderer API change.
+
+Problem:
+
+- The JGLFontRenderer API changed the beforeRender method by adding a
+customRenderState Object parameter.
+
+- This broke the latest Nifty 1.4-SNAPSHOT build.
+
+Solution:
+
+- Add customRenderState Object parameter to beforeRender method in private
+inner class BatchRenderDevice.FontRenderer.
+
+- No functionality has been added to support this parameter, so for now it
+is simply unused.
+
+Details:
+
+Error message:
+
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:2.3.2:compile (default-compile) on project nifty: Compilation failure: Compilation failure:
+[ERROR] nifty-gui/nifty-core/src/main/java/de/lessvoid/nifty/render/batch/BatchRenderDevice.java:[937,10] de.lessvoid.nifty.render.batch.BatchRenderDevice.FontRenderer is not abstract and does not override abstract method beforeRender(java.lang.Object) in org.jglfont.spi.JGLFontRenderer
+[ERROR] nifty-gui/nifty-core/src/main/java/de/lessvoid/nifty/render/batch/BatchRenderDevice.java:[1004,4] method does not override or implement a method from a supertype
+
+Broken at:
+
+- File: https://github.com/void256/nifty-gui/blob/1.4/nifty-core/src/main/java/de/lessvoid/nifty/render/batch/BatchRenderDevice.java
+
+Caused by:
+
+- Commit: void256/jglfont@2f37d869ea80d533cc8d0ebfd0f1737fe4098baf "CustomRenderContext feature added"
+- File: https://github.com/void256/jglfont/blob/2f37d869ea80d533cc8d0ebfd0f1737fe4098baf/jglfont-core/src/main/java/org/jglfont/spi/JGLFontRenderer.java
+- Line: 66
+- Author: @void256 ;-)
+
+* Merge pull request #239 from mkaring/1.4
+
+Fix color conversion bug introduced in bd08f8ce
+
+* Merge pull request #2 from vilarion/1.4
+
+Fix color conversion bug introduced in bd08f8ce
+
+* Merge pull request #238 from vilarion/1.4
+
+Fix color conversion bug introduced in bd08f8ce
+* Fix color conversion bug introduced in bd08f8ce
+
+* #116 niftyMethodInvokerDebugEnabled added to not supress exceptions
+
+You can now control if Exceptions that occur when the NiftyMethodInvoker
+catches an Exception while executing any of the standard interact
+handlers are being only logged (the default behaviour) or will be
+rethrown so that the whole application crashes (set
+niftyMethodInvokerDebugEnabled to true for this mode).
+
+Additionally the logging of the exceptions have been improved, using the
+logger framework to log the exception.
+
+* Removed easymockclassextension (was deprecated anyway) and update to 3.2
+
+some test made problems because it was using classes from the easymock
+classextension jar and the regular easymock jar. however classextension
+has been deprecated some time ago and was therefore removed. tests have
+been modified accordingly.
+
+*  #100 basic support added for changing locale at runtime (text only)
+
+This commit adds support for changing text (TextRenderer) on the fly
+when changing the locale using nifty.setLocale(). An example to see that
+working has been added as Issue100Main.
+
+The "trick" to make this working is to store the unmodified original
+text value inside of the TextRenderer and use it when the locale has
+been changed to reinit the TextRenderer with the original value applied.
+The TextRenderer already stored the original text value and it already
+translated it using the SpecialValuesReplace code! However, so far it
+was always called with the already localized text.
+
+To change that we now store in the attributes map additionally to the
+translated value the original value. This way when the TextRenderer
+is being initialized we can use the original untranslated value!
+
+When the locale is changed using the method nifty.setLocale() a
+NiftyLocaleChangedEvent is being published. The TextRenderer now
+subscribes to that event and will simply reinitialize itself using
+the original text value stored (which will automatically will be
+localized using a call to SpecialValuesReplace which was already
+in place).
+
+A similar approach could be used for other properties but for the
+time being this is only applied to the text attribute of a TextRenderer.
+
+* Merge pull request #235 from relu91/1.4
+
+New styles with sounds and costum effects, fixes #228
+
+* New styles with sounds and costum effects, fixes #228
+
+* Merge pull request #232 from Alchemist0823/1.4
+
+Resolved UnsupportedOperation Exception
+
+* Merge pull request #233 from relu91/1.4
+
+Add subImage-Resize for ImageMode , fixes #225
+
+* Add subImage-Resize for ImageMode , fixes #225
+
+There's also a simple example
+
+* Resolved UnsupportedOperation Exception
+
+Collections.unmodifiableMap(kerning)
+
+getKerning returns a unmodifiableMap but your code modifies it.
+
+(AngelFontCode:160) info.getKerning().put((char) second, amount);
+UnsupportedOperation Exception
+
+* Merge pull request #230 from relu91/1.4
+
+Solves issue #229
+
+* Solved issue #229 thanks to avatarscape
+
+* Delete temp images fro wiki
+
+* #227 make jogl dependencies 'provided' instead of 'compile'
+
+Please note that this means that you now have to provide the jogl
+libraries on your own when you depend on nifty-renderer-jogl2. They will
+not be included automatically anymore.
+
+* #226 remove last remaining calls to System.currentTimeMillis()
+
+* Add wiki images
+
+Tring to importing wiki from sourceforge
+
+* #223 apply absolute clip only when it is enabled + disableAbsoluteClip()
+
+Until now absolute clipping was enabled by default and was being set to
+the whole screen. However this lead to problems when panels with
+childClip="true" have been moved outside of the screen. For example the
+ControlsDemo has a ScrollPanel demo which animates out of the screen.
+With absolute clipping enabled (default) the clipping rectangle of the
+ScrollPanel was ignored due to the absolute clipping rectangle was
+already enabled. This lead to rendering artifacts. In case of the
+ControlDemo the big picture that was used as the area to be scrolled
+around was displayed completely without being clipped at all.
+
+This change will now apply the absolute clipping ONLY when it is
+actually used, e.g. if someone calls nifty.setAbsoluteClip(). If this
+method is not called then from now on no absolute clipping is being
+applied anymore which fixes the rendering problems in the ControlsDemo.
+
+I'm aware that there might be other problems when absolute clipping is
+enabled but I can't fix them right now.
+
+Please Note: Once you enable absolute clipping by a call to
+nifty.setAbsoluteClip() it will stay enabled unless you disable it again
+with a call to the new method disableAbsoluteClip().
+
+* #53 fix initial click problem that occured in some cases
+
+* #55 Double subscription of annotation-based events really fixed now
+
+After modifying the EventBus project event processing in Nifty didn't
+work correctly anymore. The problem was that the ProxySubscriber class
+"NiftyEventAnnotationProcessor.Subscriber" class proxied to the same
+object but different methods. With the EventBus-project patch in place
+these were detected as duplicates and ignored :)
+
+However, when thinking about it again using the ProxySubscriber is not
+really necessary for the NiftyEventAnnotationProcessor, so I've removed
+it and now the "NiftyEventAnnotationProcessor.Subscriber" is subscribed
+directly. For that to work correctly the Subscriber now has equals() and
+hashCode() implementations.
+
+Issue55Main testcase has been added again too.
+
+* Revert "#55 prevent double subscription of annotation-based events"
+
+This reverts commit 2b1fc8211f66cae89118d7b742c548495c3edf48.
+
+* #177 use Collection instead of List (ListBox addAllItems/removeAllItems)
+
+* #113 Pasting text into a textfield ignores maxLength setting
+
+* #55 prevent double subscription of annotation-based events
+
+The used EventBus already checked for duplicate subscribers. However,
+for the Nifty annotations a ProxySubscriber was used and from what I can
+tell there is a little bug in the EventBus implementation for that.
+
+When the EventBus checked for duplicate ProxySubscribers it compared the
+new Subscriber with the existing once. That is correct. However, for the
+subscribers already in the list it ALWAYS used the "proxiedSubscriber"
+but for the new subscriber it used the "proxiedSubscriber" only when it
+used "ReferenceStrength.WEAK" othwise it would use the subscriber as-is.
+This made it never detect existing subscribers and therefore subscribed
+them multiple times (even tho they would reference the same proxied
+subscriber in the end).
+
+I think this is not correct. I've changed the ReferenceStrength to WEAK
+now which "should" me okay and will fix this issue. From what I've seen
+in the EventBus source the ReferenceStrength is only used for that check
+and does not have any other side-effects. So this should be okay and
+fixes this issue.
+
+Additionally I've added an example for the issue reproducing the issue.
+
+* #84 More flexible solution in using control definition parameters
+
+control parameters are now detected using two different ways:
+
+1. the old syntax: $parametername
+2. the new syntax: $(parametername)
+
+Please note that the new syntax detects parameters in substrings as
+well. For example using: text="Hello $(myText)" will create a new
+parameter "myText" and will replace the value given for "myText" in the
+substring when the control is being resolved. See the added issue84.xml
+in this commit for a working example.
+
+* new moveToRelative() method added to fix a bug in AllExamples example
+
+This was actually an interesting bug to fix because there were several
+things interacting in weird ways.
+
+The problem: In the AllExamples menu the selected menu item was animated
+and rendered with the TextSize effect making it larger than regular menu
+items. However with the latest Nifty 1.4 the selected menu-item was
+stuck at it's initial position not being moved around with the rest of
+the menu. WTF?
+
+Issues:
+
+First, a couple of weeks back we've cleaned up rendering the way Nifty
+keeps track of render states while rendering. There was a lot of
+(mostly) unnecessary render state saves happening while rendering which
+have been removed. I think this affected the moveTo() call on the
+NiftyRenderEngine which sets a current offset being applied when
+rendering. The TextSize effect uses moveTo() to adjust the text position
+according to the textScale. However, it did that absolutely without
+taking into account that the current moveTo could already been modified
+by some effect before (like the moving in of the whole menu). I think in
+the past this moveTo() state was saved correctly but because of the
+change it is not saved correctly.
+
+The second issue was the introduction of the absolute clipping. The menu
+was using childClip which will only actually clip if there was no
+clipping set before. With absolute clipping enabled and the menu
+starting off-screen the clipping rectangle was not changed end the
+absolute clipping (whole screen) was still enabled. Because of the move
+effect not moving the selected menu item and it was not being clipped it
+stayed at its original position looking odd :) Without absolute clipping
+the moveTo bug was not really visible because it was clipped.
+
+To fix all of this we've now introduced a new moveToRelative() method
+which is used by the TextSize effect now. This will add the moveTo
+effect to the one that might already be applied. So the TextSize
+position adjusting (because of the new textsize) AND the move effect of
+the whole menu will now be added together and applied both.
+
+This is a little hack but it will solve the issue for now.
+
+Future versions of Nifty will have a proper transformation matrix - I
+promise ;)
+
+* #83 issue example code added (SSCCE) to prove that it works in 1.4
+
+* Merge pull request #223 from relu91/1.4
+
+Absolute clipping
+
+* Absolute clipping
+
+Added also a simple example .
+
+* #43 make setVisible() none recursive and keeping state of child elements
+
+Calling setVisible() on an element will now only change the visibility
+flag of this element without modifying the child element visibility
+state. Therefore when hiding a parent element and later showing it
+again, the child elements visibility will not be changed.
+
+Additionally a new isVisibleWithParent() method has been introduced that
+checks the visibility of the element + the visibility of all parent
+elements. This was necessary for DraggableControl which checks valid
+drop targets bottom up including the visibility flag. The
+DraggableControl will call isVisibleWithParent() now to make sure it
+doesn't select drop targets that are visible themself but are not
+actually visible because of some parent element being hidden.
+
+* Merge pull request #222 from relu91/1.4
+
+Finish multiclick support
+
+* Fish multiclick support
+
+This commit adds multiclick support for all nifty mouse buttons.
+
+* Merge pull request #220 from relu91/1.4
+
+Fixes #175 #176 and #53
+
+* try to clear my commits
+
+* Some issues fixed
+
+fixed #175 #176 and start to work in #56
+
+* Fixed #175
+
+* Fixed #176
+
+* Adding multiClickEvent ! #53 . Follow scenario : click-click-click , three events will be raised onClickEvent - MultiClickEvent( count = 2 ) - MultiClickEvent( count 3 ) . This only works for primary button but it should be simple to add to the other methods . I've also added a global property to change multi-click-threshold 
+
+* Merge branch '1.4' of git@github.com:void256/nifty-gui.git into 1.4
+
+* #71 Optimize sending events when changing constraints
+
+Changing constraints will not immediately publish an event on the
+eventbus anymore (with some exceptions noted below). Instead the element
+will just be marked and the event will be send on the next layout pass.
+
+Doing it this way is more correct because the event will now be sent
+directly after the change has been actually applied (and not at some -
+possible long - time before it actually happened).
+
+And when changing multiple constraints you'll now only get a single
+Element changed event and not multiple.
+
+There are some changes to an Element that will have a direct effect on
+it (and not at the next layout pass) that will be published immediately:
+
+- setParent() when the parent clip area is changed
+- setStyle()
+- removeStyle()
+
+* Merge pull request #219 from relu91/1.4
+
+Solve issue #218 
+
+* Solve an error in the comment at line 64 
+
+Evil cut&paste :D
+
+* Also height and width
+
+i don't know if this is a real user case... it is only to be coherent
+with the other commit .
+
+* Little workaround on AbsoluteLayout
+
+This solves the issue #218 . I tested it on Nifty-Editor and i didn't
+notice any bugs .
+
+* Update jogamp to version 2.1.4
+
+* Merge pull request #215 from 3xp0n3nt/batch-render-dev
+
+Fix rendering bug.
+
+* Fix rendering bug.
+
+In CoreProfileSaveGLState constructor, create params IntBuffer with 16
+elements instead of 1, as the glGetIntegerv calls (in that class)
+require an IntBuffer of 16 elements or it will crash.
+
+* Merge pull request #214 from 3xp0n3nt/batch-render-dev
+
+Fix rendering bug.
+
+* Fix rendering bug.
+
+In CoreTexture2D constructor, call createTexture last after all other
+fields have been initialized in order to prevent the createTexture
+method from using any uninitialized values.
+
+A NullPointerException was being thrown when the textureIdBuffer field
+was not yet initialized, yet was attempted to be used by the
+createTexture method.
+
+* Merge pull request #213 from 3xp0n3nt/batch-render-dev
+
+Rendering bugfix.
+* Rendering bugfix.
+
+* Merge pull request #212 from 3xp0n3nt/simplify-rendering-backends
+
+Simplify rendering backends.
+
+* Simplify rendering backends.
+
+nifty-core:
+
+- Delete BatchFactory & CoreBatchFactory, and just instaniate a
+  BatchInternal & CoreBatchInternal directly, respectively, in
+  BatchRenderBackendInternal & BatchRenderBackendCoreProfileInternal,
+  respectively.
+
+- Remove the BatchFactory & CoreBatchFactory parameter from
+  BatchRenderBackendInternal & BatchRenderBackendCoreProfileInternal
+  constructors, respectively.
+
+Lwjgl / Jogl / LibGDX:
+
+- Delete JoglBatchRenderBackend & LwjglBatchRenderBackend, since they
+  just delegate everything to BatchRenderBackendInternal anyway. Don't
+  delete GdxBatchRenderBackend because it specializes a couple of methods
+  rather than delegating.
+
+- Delete JoglBatchRenderBackendCoreProfile &
+  LwjglBatchRenderBackendCoreProfile, since they just delegate
+  everything to BatchRenderBackendCoreProfileInternal anyway (there is
+  no GdxBatchRenderBackendCoreProfile).
+
+- Delete JoglBatch, LwjglBatch, GdxBatch, since they just delegate
+  everything to BatchInternal anyway.
+
+- Delete JoglBatchFactory, LwjglBatchFactory, GdxBatchFactory.
+
+- Delete JoglCoreBatch, LwjglCoreBatch (there is no GdxCoreBatch).
+
+- Delete JoglCoreBatchFactory, LwjglCoreBatchFactory (there is no
+  GdxCoreBatchFactory)
+
+- Move remaining classes in render/batch and render/batch/core packages
+  into render/ package.
+
+- Delete batch & batch/core packages.
+
+- Modify JoglBatchRenderBackendFactory & LwjglBatchRenderBackendFactory
+  to instantiate a BatchRenderBackendInternal directly, instead of
+  instantiating a JoglBatchRenderBackend or LwjglBatchRenderBackend,
+  respectively.
+
+- Modify JoglBatchRenderBackendCoreProfileFactory &
+  LwjglBatchRenderBackendCoreProfileFactory to instantiate a
+  BatchRenderBackendCoreProfileInternal directly, instead of instantiating
+  a JoglBatchRenderBackendCoreProfile or
+  LwjglBatchRenderBackendCoreProfile, respectively.
+
+- Remove instantiation of JoglBatch, LwjglBatch, GdxBatch from
+  JoglBatchRenderBackendFactory, LwjglBatchRenderBackendFactory, &
+  GdxBatchRenderBackendFactory, respectively.
+
+- Remove instantiation of JoglBatchCoreProfile & LwjglBatchCoreProfile
+  from JoglBatchRenderBackendCoreProfileFactory &
+  LwjglBatchRenderBackendCoreProfileFactory, respectively (there is no
+  GdxBatchCoreProfile or GdxBatchRenderBackendCoreProfileFactory).
+
+- Mark JoglRenderDevice & LwjglRenderDevice as deprecated, including
+  javadoc explaining what to use instead (there is no GdxRenderDevice).
+
+* Merge pull request #211 from 3xp0n3nt/move-batch-package
+
+Move batch package into render package where it belongs.
+
+* Move batch package into render package where it belongs.
+
+* Merge pull request #210 from 3xp0n3nt/batch-render-dev
+
+Fix rendering bug.
+
+* Fix rendering bug.
+
+In CoreTexture2D the createTexture method in the constructor was making
+use of the CoreGL instance before it was assigned from the constructor.
+The solution is very simple, move the assignment of the CoreGL instance
+above the createTexture method, so nothing in this class can use it
+before it's assigned. The stacktrace printing in LoggerShortFormat
+revealed the source of this problem easily.
+
+* Merge pull request #209 from 3xp0n3nt/batch-render-dev
+
+Fix rendering bugs & improve error handling.
+
+* Fix rendering bugs & improve error handling.
+
+Note: Various debugging logging statements from
+350b20bdb983622bcd67b3c607e0fced8c2b63b6 are still in place until the
+bug from #203 can be verified as being fixed.
+
+Bugfixes:
+
+- The checkTarget method in CoreTexture2D had previously been re-written
+  to use if statements rather than a switch because the switch cases had
+  to be converted to methods, which is illegal for a switch statement.
+  Unfortunately during this re-writing a logic error was made that used
+  AND's (&&) instead of OR's (||) for the conditions that used to be
+  cases. This had the effect of throwing a CoreGLException during the
+  creation of new textures, causing the texture id of a new texture atlas
+  to be -1, which in turn caused a NullPointerException in
+  BatchRenderBackendCoreProfileInternal when attempting to manipulate a
+  non-existent texture atlas. To make matters worse, the exception was
+  being swallowed by the LoggerShortFormat logging formatter that is used
+  by the nifty-examples, preventing easy debugging. Change checkTarget
+  method in CoreTexture2D to use the correct OR (||) logic, and fix the
+  nifty-examples logging formatter to not swallow the exception (more on
+  the logging in the "Improved error handling" section). Fixes bug from
+  #203.
+
+- The glTextImage2D method in CoreTexture2D was ignoring the
+  internalFormat parameter being passed to this method, and was
+  assigning the internal field this.texImageInternalFormat to the format
+  parameter instead, which basically means that the internal texture
+  format of newly created textures is being assigned to the format of the
+  pixel data when it should be being assigned to the internalFormat
+  parameter, which specifies the format of the texture. Of course, this
+  bug never manifested in normal use of the CoreTexture2D class because
+  the most common pixel data format, GL_RGBA, just happens to match the
+  most common internal texture format, GL_RGBA. This bug would have
+  manifested more clearly if compressed textures were being used, where
+  the pixel data format would differ from the internal texture format.
+  Assign this.texImageInternalFormat to the correct parameter,
+  internalFormat.  This bug appears to have never been documented, and
+  also seems to have been around for a very long time.
+
+Improved error handling:
+
+- Change LoggerShortFormat logging format used by nifty-examples to
+  include the stack trace of any exception that is logged. The logger
+  was swallowing exceptions whole o_O...
+
+- Remove duplicate OpenGL error checking methods from
+  BatchRenderBackendInternal, BatchRenderBackendCoreProfileInternal, &
+  CoreTexture2D - use CheckGL class instead as it provides the exact
+  methods.
+
+- Remove duplicate texture size checking method from
+  BatchRenderBackendInternal, BatchRenderBackendCoreProfileInternal, &
+  CoreTexture2D - move it to CheckGL class instead so that all
+  OpenGL-based internal rendering classes can make use of it. There are
+  other checking-type methods in CoreTexture2D but they are only used
+  internally by that class and so haven't been moved to CheckGL.
+
+- Add OpenGL error checking to CoreProfileSaveGLState because it makes a
+  lot of OpenGL calls.
+
+- Change log warning entries in BatchRenderBackendInternal &
+  BatchRenderBackendCoreProfileInternal to severe when dealing with
+  failed texture creation or failed texture updating to make them stand
+  out more, and this is really a more appropriate level for such
+  phenomenon, and add more detailed debugging messages to these log
+  entries.
+
+Miscellaneous :
+
+- Changed order of constructors in CoreTexture2D so they are basically
+  in order of increasing complexity.
+
+- Remove unused method from CoreTexture2D.
+
+- Rearranged imports in LwjglGL, LwjglInitHelper, & NiftyTest to be in
+  correct order.
+
+- Remove some unnecessary this keywords.
+
+- Add "Internal implementations" comments in CheckGL & LoggerShortFormat.
+
+* Merge pull request #208 from X-Ray-Jin/1.4
+
+TreeItem new functionality
+
+* TreeItem old format
+
+* Fix treetime format
+
+* Added remove item to TreeItem. Also sets parent on add or remove item now.
+
+* Merge pull request #1 from void256/1.4
+
+fix missing gl31 local variable
+
+* fix missing gl31 local variable
+
+* Merge pull request #207 from gouessej/patch-1
+
+Patch 1: fix of the issue 205 + better GLU instanciation
+
+* Merge pull request #204 from 3xp0n3nt/batch-render-dev
+
+Batch render dev
+
+* Update JoglCoreGL.java
+
+Same mistake than in JoglGL...
+
+* Update Tools.java
+
+Uses GLU.createGLU(GL).
+
+* Update JoglRenderImage.java
+
+Uses GLUgl2 instead of GLU to benefit of a full implementation
+
+* Update JoglGL.java
+
+Partial fix of the issue 205:
+https://github.com/void256/nifty-gui/issues/205
+
+* Add missing annotation and fix parameter name.
+
+Add missing JSR annotation and rename method parameter to make it more
+accurate.
+
+* Add debugging statements.
+
+Addresses #203.
+
+* Merge pull request #203 from 3xp0n3nt/batch-render-dev
+
+Major batch rendering system overhaul, 3rd draft.
+
+* Major batch rendering system overhaul, 3rd draft.
+
+Core profile batch rendering system:
+
+- Refactor the entire core profile batch rendering system to match the
+  new non-core profile batch rendering system setup / refactoring.
+
+- Core profile now has multiple atlas & non-atlas texture support.
+
+- Move all Core* classes into nifty-core.
+
+- Remove Core* duplication between nifty-renderer-lwjgl &
+  nifty-renderer-jogl.
+
+- Abstract core profile OpenGL calls into CoreGL interface, which
+  extends GL interface.
+
+- Remove obsolete compatibility code / checking in Core* classes, and
+  require OpenGL 3.2 or higher in order to use the Core Profile
+  rendering system at all. Since we requiring OpenGL 3.2 or higher, we
+  don't need to pollute the system with all kinds of non-core profile
+  compatibility junk.
+
+- Remove rare uses of OpenGL extensions that are preventing the
+  abstraction of CoreGL, since not all implementations can be forced to
+  deal with extension-specific OpenGL stuff. It's not needed anyway.
+  There are only several places where extensions are used, and they aren't
+  anything critical. It limited the functionality slightly, but it
+  shouldn't be missed. The badly-needed refactoring of the core profile
+  system is so much more important anyway.
+
+- Give *BatchRenderBackendCoreProfile classes package-private
+  constructors to force users to rely on
+  *BatchRenderBackendCoreProfileFactory.create() to instantiate. The
+  reason being that the *BatchRenderBackendCoreProfile constructors are
+  too complex and are managed automatically by their respective
+  factories.
+
+- Refactor any examples that are using a *BatchRenderBackendCoreProfile
+  to use the factory method instead.
+
+- Create JOGL & LWJGL implementations of CoreGL interface.
+
+- Rename CoreCheckGL & CoreGLException to CheckGL & GLException,
+  respectively, because there is nothing "core profile" about them, and
+  the non-core profile system could easily use them if needed.
+  LwjglInitHelper class in nifty-examples currently uses these in non-core
+  profile code already. Move CHeckGL & GLException out of the core
+  package and into the parent package, "batch", since they are not
+  core-profile specific.
+
+- Create CoreMatrix4f, CoreVector4f, & CoreMatrixFactory, based on Mat4,
+  Vec4, & CoreMatrixFactory from nifty-renderer-jogl, for use in
+  BatchRenderBackendCoreProfileInternal in nifty-core.
+
+- Non-core batch rendering system:
+
+- Rename OpenGLBatchRenderBackend to BatchRenderBackendInternal because
+  that is a more accurate name.
+
+- Rename OpenGLBatch to BatchInternal because that is a more accurate
+  name.
+
+- Rename OpenGLBatchFactory to BatchFactory, in line with the last two
+  mentioned changes.
+
+- Add many non-core profile OpenGL methods that are only currently being
+  used by the core profile system to the GL interface, rather than
+  adding them to the
+
+- General code cleanup.
+
+- Miscellaneous:
+
+- Improve spelling, grammar, readability, formatting, & punctuation of
+  existing javadoc and comments.
+- Add missing final keyword to method parameters.
+- Add missing JSR annotations.
+- Fix incorrect JSR annotations.
+- Add some asserts to deal with unsolvable JSR annotation warnings.
+- General code cleanup
+
+Caveats:
+
+- nifty-renderer-libgdx does not yet have a core profile rendering
+  system, which means mobile devices / OpenGL ES2 is not officially
+  supported yet.
+
+- I cannot integration-test the core profile rendering system because my
+  computer is too old to support OpenGL 3.2, so I don't know if
+  everything actually works. There may be (read: are probably) some bugs
+  ;).
+
+- There is still a lot of duplicated code between
+  BatchRenderBackendInternal & BatchRenderBackendCoreProfileInternal.
+
+- There are a few non-core profile OpenGL methods in the CoreGL
+  interface because libGDX only supports them as part of the core
+  profile (OpenGL ES 2 and up), so the nifty-renderer-libgdx non-core
+  profile rendering system wouldn't have been able to implement them as
+  part of the GL interface.
+
+- There are major API changes.
+
+- The Core* classes look like every line changed because they of being
+  moved to a different module within the project.
+
+* Merge pull request #202 from 3xp0n3nt/refactor-image-io
+
+Refactor image loading system.
+
+* Refactor image loading system.
+
+Note: All modules compile, all tests are passing, and all modules'
+examples (LWJGL, JOGL, LibGDX) render correctly on my machine.
+
+ImageLoader interface:
+
+- Remove unused load methods.
+
+- Refactor remaining load methods so that they make sense:
+  - loadAsByteBufferRGBA & loadAsByteBufferARGB are the only needed options
+  - loadAsByteBufferARGB has an option to flip the image vertically
+  - get rid of "mouseCursor" in the interface names - image loading
+    shouldn't need to know about mouse cursors (Single Responsibility
+    Principle)
+  - loadByteBufferARGB is used to load mouse cursors, setting
+    shouldFlipVertically parameter to true
+
+- Clean up code formatting, add missing final keywords to parameters,
+  update JSR annotations.
+
+- Rename image info get* methods to increase clarity.
+
+- In general, minimize the interface to provide only the functionality
+  needed by the library to avoid bugs and confusion.
+
+ImageIOImageLoader:
+
+- loadAsByteBufferRGBA method adds alpha to all images instead of
+  requiring the caller to try and decipher a long list of load methods
+  that may or may not add alpha to the image. So all images will be loaded
+  as RGBA.
+
+- Rename to DefaultImageLoader, since it's used as the default image
+  loader, and it doesn't need to expose implementation details in the
+  name, which in a way violates encapsulation.
+- Refactor the private methods, some of which were very long and
+  complicated, splitting them up into small methods.
+
+- Remove features completely unused (and unlikely to ever be used) by
+  Nifty Gui such as passing around a transparency integer array
+  (although there are others as well).
+
+- Get rid of worthless comments and broken javadoc.
+
+- Create an ImageProperties nested class to keep track of a loaded
+  image's properties, which helped clean up the class tremendously and
+  removes potential for hidden bugs - for example, if one of the image
+  info get* interface methods is called (such as getImageWidth), and is
+  not set, it will now throw an exception instead of failing silently.
+
+- Clean up code formatting, add missing final keywords to parameters,
+  add missing JSR annotations. Adding final to some parameters revealed
+  some areas where the parameter values were being modified.
+
+- Update class to conform to new ImageLoader interface.
+
+TGAImageLoader:
+
+- This class has methods badly in need of refactoring, that have not yet
+  been refactored. Add TODO comments where refactoring is needed.
+
+- Get rid of worthless comments and broken javadoc.
+
+- Clean up code formatting, add missing final keywords to parameters,
+  add missing JSR annotations. Adding final to some parameters revealed
+  some areas where the parameter values were being modified.
+
+- Update class to conform to new ImageLoader interface.
+
+Other Changes:
+
+- Update all client classes to use the correct form of the new
+  ImageLoader interface methods.
+
+* Merge pull request #201 from 3xp0n3nt/batch-render-dev
+
+Major batch rendering system overhaul, 2nd draft.
+
+* Major batch rendering system overhaul, 2nd draft.
+
+- Switched everything from inheritance to composition & delegation.
+- CoreProfile rendering system still not updated yet.
+- LWJGL, JOGL, & LibGDX batch rendering systems are functioning correctly.
+
+* Merge pull request #198 from 3xp0n3nt/dropdown-warning
+
+Fix annoying worthless dropdown warning.
+
+* Fix annoying worthless dropdown warning.
+
+Clicking on a dropdown control generates a worthless warning, due to the
+fact that it is using a popup control for the list. For some reason it
+generates this warning message:
+
+log.warning ("popup [" + id + "] already scheduled to be closed. Additional close call ignored.");
+
+Change the warning to a fine log message since it's not a problem, and
+it's a very detailed debugging message that no one cares about.
+
+* Merge pull request #197 from 3xp0n3nt/batch-render-dev
+
+Major batch rendering system overhaul.
+
+* Merge pull request #196 from 3xp0n3nt/examples-refactoring
+
+Refactor examples.
+
+* Major batch rendering system overhaul.
+
+Non-atlas textures:
+
+- A non-atlas texture is a texture that is not within atlas tolerance,
+meaning that it takes up too much a percentage of space in the atlas (or
+it's width or height or both won't physically fit in the atlas), and
+since all atlases and currently the same size, if it is not within atlas
+tolerance, it won't fit in any atlas, no matter how empty or full it
+might be. The atlas tolerance is separate from the fullness or emptiness
+of an atlas.
+
+- Sometimes we need to be able to create large background images that we
+don't want consuming an entire atlas, or even high-res images that won't
+even "physically" fit in an atlas even if we wanted them to. For these,
+it is convenient to render them as a separate, individual, non-atlas
+texture in order to allow the use of such large images.
+
+- The performance penalty for having several of these non-atlas textures
+is actually very minor. They are simply assigned to their own batch,
+since each batch can only have one texture id. You can see it as a
+performance benefit actually because you free up so much space in your
+atlas.
+
+- Non-atlas textures are managed completely automatically based on the
+atlas tolerance.
+
+Multiple texture atlases:
+
+- When an atlas gets too full, we don't want to render every texture
+individually. The GPU is actually very good at handling multiple texture
+atlases for us with very little performance penalty most of the time.
+
+- The beautiful part is when an atlas gets too full, the next atlas will
+be attempted to add the image to, and so on, until, if there are no more
+created atlases, a new atlas will be created. And because the image is
+within atlas tolerance, it is guaranteed to fit in a newly created,
+empty atlas in a worst case scenario =).
+
+- The other beautiful part is that for every image we go back to the
+  first atlas to attempt upload even if the last image didn't fit
+because images are different sizes and there is always more room
+available, especially for very small images. This way the atlas space is
+not wasted because we don't start every time on the "latest" atlas, we
+always rewind back to the beginning. This only happens relatively rarely
+during image upload, so the performance penalty is once again moot, and
+we gain a lot of performance by utilizing multiple atlases rather than
+having the overflow images all be rendered in separate textures.
+
+OpenGL Non-Core-Profile Batch Rendering Changes:
+
+- Create Batch interface, whose begin() method takes not only a
+  BlendMode parameter as usual, but also a texture id, since each batch
+  is now going to potentially (not necessarily) be a different texture.
+
+- Create OpenGlBatch, an abstract Batch implementation to provide
+  default behavior for OpenGL-based Batch implementations, to avoid code
+  duplication.
+
+- Create LwjglBatch, JoglBatch, & GdxBatch concrete Batch
+  implementations that extend OpenGlBatch. This gets rid of the static
+  inner Batch classes that were nasty and had a ton of code duplication.
+
+- Create OpenGlBatchRenderBackend, an abstract BatchRenderBackend
+  implementation to provide a ton of default behavior for OpenGL-based
+  Batch implementations, to avoid code duplication. In fact, the
+  BatchRenderBackend implementations are so similar that most of the real
+  code is in here.
+
+- Make OpenGlBatchRenderBackend use abstract OpenGL calls, since the
+  only real difference between the BatchRenderBackend implementations is
+  the way in which OpenGL calls are invoked.
+
+- Make LwjglBatchRenderBackend, JoglBatchRenderBackend, &
+  GdxBatchRenderBackend extend OpenGlBatchRenderBackend, and implement
+  the abstract OpenGL methods from openGlBatchRenderBackend by simply
+  forwarding the actual OpenGL calls from either LWGJL, JOGL, or LibGDX
+  libraries. Only the OpenGL constants and methods that are actually used
+  are implemented, not the entire collection, although that will become
+  useful in the future for Nifty to have it's own complete OpenGL
+  abstraction (can't do everything in one commit ;).
+
+- Make OpenGlBatchRenderBackend fully OpenGL ES compatible. It only uses
+  calls that are available in OpenGL ES, which also works fine with
+  regular "desktop" OpenGL. OpenGlBatchRenderBackend is a compatibility
+  class; it seeks to provide the broadest application for classes which
+  extend it. It does not use any core-profile functionality - that is a
+  separate project.
+
+- Refactor duplicated fillRemovedTexture system property into
+  BatchRenderConfiguration, and rename it fillRemovedImagesInAtlas
+  because that is way clearer. Create fillRemovedImagesInAtlas method in
+  BatchRenderBackend interface, so that BatchRenderDevice can inject the
+  BatchRenderConfiguration value into the BatchRenderBackend
+  implementation.
+
+OpenGL Core Profile Batch Rendering Changes:
+
+- Core Profile BatchRenderBackend's do not yet support multiple texture
+  atlases or non-atlas textures in this commit, although that will be
+  following shortly. The methods and framework are present, just not
+  implemented yet. This won't cause any problems as long as all your stuff
+  fits in one atlas. If it's a problem, you can temporarily use the
+  parallel non-core profile BatchRenderBackend.
+
+- Core Profile classes are as lightly refactored as possible while still
+  adapting to the new framework. This is a work in progress, so there is
+  still a lot of code duplication here, and a lot of potential for future
+  refactoring.
+
+- Create LwjglBatchCoreProfile, JoglBatchCoreProfile, &
+  GdxBatchCoreProfile, which implement the Batch interface. These
+  classes are simply extracted almost exactly from their original
+  BatchRenderBackendCoreProfile counterpart.
+
+BatchRenderConfiguration:
+
+- Simple class that uses "LibGDX-style" preferences to cleanly pass
+  user-options to BatchRenderDevice without the need for a million
+  telescoping constructors or complex Builder patterns.
+
+- Allow easy configuration of old & new parameters: atlas size, atlas
+  padding, atlas tolerance, initial number of atlases, whether to
+  unload / dispose images between screens (requiring reupload) or not,
+  whether to use high quality texture filtering, and whether to fill in
+  removed image gaps in the atlas or not.
+
+- These configurations are all very well documents and have nice, sane,
+  tested defaults so that you don't even have to configure any of these
+  options unless you really want to.
+
+BatchRenderDevice:
+ - Create additional constructor to receive a BatchRenderConfiguration
+   instance
+ - Make original constructor use BatchRenderConfiguration defaults
+ - Refactor clipping code into inner Clipping class - increases clarity
+   and prepares it for moving into its own class eventually
+ - Overall refactoring and cleanup
+ - Add textureId parameter to a lot of methods, such as addQuad, since
+   we can't assume quads are part of a specific texture anymore.
+   Everything is refactored to remove the assumption about everything being
+   rendered to the same texture. Everything in this class passes around a
+   texture id as necessary.
+ - Add a ton of documentation to the top of the class explaining everything.
+ - Implement image caching for when the BatchRenderConfiguration option
+   is set for not disposing of images between screens. When this option is
+   set to false (don't dispose / unload between screens), screen
+   re-transitions are lightning fast and buttery smooth because after
+   visiting a screen once, the images are permanently uploaded, and you
+   can't run out of atlas space ;).
+ - Add even more debugging log messages.
+ - Each atlas has an accompanying TextureAtlasGenerator.
+ - Much of the changes in this class are changing methods that used to
+   assume acting on a single atlas to work with multiple atlases
+   instead, including passing around a texture id.
+
+BatchRenderImage:
+
+ - This class was badly in need of an overhaul, and it sure got one -
+   almost a complete rewrite. Because the upload() method is internal to
+   the BatchRenderImage itself, much of the multiple texture atlas logic
+   and non-atlas texture logic is in this class.
+ - Add a reupload method that takes a texture id and
+   TextureAtlasGenerator. It is necessary for when the image fails to
+   upload to the original atlas, then it must be able to reupload to a
+   different atlas with it's accompanying TextureAtlasGenerator.
+ - Add a lot of commentary to this class.
+ - Add a lot of very useful debugging log messages so you can see what's
+   happening with multiple texture atlases and non-atlas textures
+   easily.
+
+TextureAtlasGenerator:
+
+- Add 28 tests for TextureAtlasGenerator
+- Create new method shouldAddImage that checks whether an image is
+  within atlas tolerance
+- Delete unused TextureAtlasGeneratorException class
+- Result is now "Nullable", meaning that you can get a null Result
+  returned when attempting to add an image to an atlas. That just means
+  that the iamge was not within atlas tolerance. Anyway, the null Result's
+  are handled perfectly by BatchRenderImage, and by the
+  TextureAtlasGenerator tests.
+- Add a ton of documentation to this class.
+
+BatchRenderBackend:
+
+- Add a ton of documentation
+- Add some new methods for managing non-atlas textures
+- Modify atlas methods to take a texture id
+- Add a couple new methods for configuring settings from
+  BatchRenderConfiguration
+- Add a createBatch factory method to return the specific concrete Batch
+  implementation for use with OpenGlBatchRenderBackend - polymorphic
+  Batch's
+- Add a generic type specifier to the class to specify the type of
+  concrete Batch implementation, mainly for use with the createBatch
+  method.
+
+Image IO:
+
+- Delete nasty duplicate ImageData interfaces in nifty-renderer-lwjl &
+  nifty-renderer-jogl2
+
+- Delete nasty duplicate ImageData implementations, TGAImageData &
+  ImageIOImageData in nifty-renderer-lwjl & nifty-renderer-jogl2
+
+- Rename ImageData interface to ImageLoader, since that's what it is.
+
+- Rename ImageIOImageData & TGAImageData to ImageIOImageLoader &
+  TGAImageLoader, respectively.
+
+- Create ImageLoaderFactory for creating concrete ImageLoader instances
+  based on the image filename extension. This code was duplicated all
+  over the place.
+
+- Move ImageLoader interface, ImageLoaderFactory, TGAImageLoader, &
+  ImageIOImageLoader to nifty-core/render/io where it belongs
+
+Mouse cursors:
+
+- Add enable() & disable() methods to MouseCursor interface for polymorphic mouse
+cursor handling (no more casting or instanceof checks, yay!)
+- MouseCursor implementations now take a filename & NiftyResourceLoader in
+their constructors to keep messy image loading code internal
+
+Faux changes:
+
+There are some files that appear to have every line changed but that is
+not the case at all; it is just git stripping out the evil CRLF
+characters.
+
+* Refactor examples.
+
+Jogl:
+
+- Fix JOGL mousewheel that didn't work
+
+- Refactor JOGL example loading to provide a clean, consistent way to
+  run the examples
+
+- Organize JOGL examples into subpackages with a naming convention that
+  makes sense and is consistent with nifty-examples
+
+- Add more JOGL examples, more could be added easily now due to the easy
+  way they can be loaded
+
+- Add JOGL sound since there currently isn't any - use
+  PaulsSoundsystemSoundDevice with JavaSound (only real option)
+
+- Change JOGL example rendering from old to batch mode - old mode
+  crashes and is, well, old :P
+
+Other:
+
+- Create missing TutorialDemoMain NiftyExample implementation in
+  nifty-examples
+
+- Delete obsolete, commented out tutorial examples for java2d, jme, etc.
+
+- Change initial atlas size for Android examples in
+  nifty-examples-libgdx from 2048 to 1024
+
+- Set useCoreProfile to false in
+  nifty-examples/default-controls/ControlsDemo for testing
+  non-core-profile batch rendering
+
+- Fix code formatting throughout the examples files affected by these
+  changes
+
+- Faux changes due to stripping out of nasty platform-dependent CRLF
+  characters (newline normalization)
+
+* Merge pull request #194 from bgroenks96/1.4
+
+Implementation of setMousePointer for JoglInputSystem
+
+* Implemented setMousePointer in JoglInputSystem
+-setMousePosition via NEWT Window method 'warpPointer'
+-patched change associated demo JOGLNiftyRunner
+
+* Implemented setMousePointer in JoglInputSystem
+-setMousePointer via NEWT Window method 'warpPointer'
+-fixed incorrect auto-import from last commit
+
+* Implemented setMousePointer in JoglInputSystem
+-setMousePointer via NEWT Window method 'warpPointer'
+
+* Merge pull request #193 from mkaring/1.4
+
+Fixed resolving of the auto scroll parameter of scroll panels
+
+* Fixed resolving of the auto scroll parameter of scroll panels
+
+* Lwjgl: CoreProfileBatchRenderer: Save/Restore GL state we modify
+
+This way we can play together much nicer with existing Applications that
+mix Nifty rendering with other non-Nifty rendering.
+
+* BatchRenderDevice should call renderBackend.endFrame() (was missing)
+
+* Bugfix batched renderer (changes to texture atlas need bind() call!)
+
+Usually when Nifty renders using the batched renderer the texture atlas
+is the only texture bound to GL_TEXTURE_2D for the whole time.
+
+However since we allow dynamically creating, modifying the texture atlas
+it is possible that calls to: clearAtlasTexture(), addImageToTexture()
+and  removeFromTexture() are executed while the texture atlas texture is
+not currently bound.
+
+This patch fixes this. Please note that we call bind() directly in the
+method and therefore potentially too often. This is not a problem for
+clearAtlasTexture() and removeFromTexture() because they will be called
+just a few times (or only once for clearAtlasTexture()). For
+addImageToTexture() we bind the texture atlas for each call of that
+method with is not optimal but shouldn't matter too much (mot verified
+in detail tho).
+
+Kudos to Andreas Drewke for figuring this one out!
+
+* Merge pull request #190 from mkaring/1.4
+
+Fixed tree box
+
+* Removed illegal attributes from treebox definition
+
+* Fixed tree box
+
+The tree box is now responding to input events again.
+
+* Merge pull request #189 from mkaring/1.4
+
+Fixed error in rendering order
+
+* Merge branch '1.4' of https://github.com/void256/nifty-gui into 1.4
+
+* Fixed error in finding render order
+
+ - The error cause elements to be ordered by their ID instead of
+   their insert order, causing entirely unexpected and wrong
+   rendering results.
+
+* Remove unnecessary Renderstate saving in Element/Effect rendering
+
+Kudos to @mkaring for figuring this one out.
+
+* Merge pull request #188 from iamtakingiteasy/1.4
+
+Added resource loader proxy of nifty for resource loading of fonts
+
+* Merge pull request #187 from mkaring/1.4
+
+Added null sound device
+
+* Added resource loader proxy of nifty for resource loading of fonts
+
+* Fixed usage of wrong padding for width calculation
+
+* Added null sound device again
+
+This is like the only null object that is useful.
+
+* Merge pull request #186 from iamtakingiteasy/upstream
+
+Changes in nifty-gui required to implement AWT-backed TTF font rendering from jglfont side
+
+* Changes in nifty-gui required to implement AWT-backed TTF font rendering from jglfont side
+
+* Merge pull request #185 from mkaring/1.4
+
+Fixed drag'n'drop notifications
+
+* Merge branch '1.4' of https://github.com/void256/nifty-gui into 1.4
+
+* Fixed drag'n'drop notifications
+
+* Merge pull request #184 from mkaring/1.4
+
+Fixed list box
+
+* Fixed updating render order
+
+* Suppressing selection changed event during list box initialization
+
+* Merge branch '1.4' of https://github.com/void256/nifty-gui into 1.4
+
+* Added missing layout call to list box
+
+* Merge pull request #183 from mkaring/1.4
+
+Fixing the console
+
+* fix too early closing of InputStream
+
+* Trigger layout process for console control once its initialized
+
+* Fixed creation detection of vertical scrollbar in listbox
+
+* Fixed showing/hiding of scrollbar handle
+
+* Merge pull request #182 from mkaring/1.4
+
+Fixed text field focus problem
+
+* Fixed input event processing of text field
+
+* Update LWJGL to version 2.9.1
+
+* .apt_generated added to .gitignore
+
+* Merge pull request #181 from mkaring/1.4
+
+Fixed tab group error
+
+* removed unnecessary nifty.createImage() call from AllExamplesMain
+
+* Catch GDX exception in case of a bad mouse cursor
+
+* Fixed tab group error
+
+Usage of tab groups no longer freezes the entire GUI
+
+* replaced Integer.compare(int x, int y) with Java 1.6 compatible version
+
+* Merge pull request #180 from mkaring/1.4
+
+Fixing more bugs
+
+* Handle children storage corruption in element
+
+The children storage of the element got corrupted in case the ID of a
+element got changed after it was added to its parent. In this case it
+was likely to happen that the element couldn't be located anymore in
+the tree set used to maintain the render order.
+
+Now the elements reports any change of the ID to its parent to give
+it the chance to update the rendering order as needed.
+
+* Added some fail-saves for adding and removing child elements
+
+* Added some missing annotations
+
+* Fixed ID resolving
+
+There was a problem in resolving the IDs that came up in some cases
+and caused illegal IDs to be generated. Now there is a proper ID
+overlap detection implemented. Its slightly more time consuming,
+but as the resolving is done once when the elements are created and
+too long IDs slow done the event handling it does not really matter.
+
+Also there is now a test case that validates correct ID creation.
+
+* Added some missing annotations
+
+* Merge remote-tracking branch 'GitHub-void/1.4' into 1.4
+
+* Improved Object pool test
+
+* Merge pull request #179 from mkaring/1.4
+
+Some improvements of errors revealed after the refactoring
+
+* Fixed invalid null check in draggable control
+
+* Improved list box
+
+ - Avoided use of the execute end of frame element effects function
+ - Cached element references for faster resolving
+
+* Improved HTML generator
+
+ - Removed requirement for the execute end-of-frame element action
+   function
+
+* Improved scroll panel
+
+ - Improved access performance for scroll bars
+ - Removed the nasty execute end-of-frame element actions call
+
+* Marked the root of all evil.
+
+ - The executeEndOfFrameElementActions has the potential to cause
+   massive problems in case its used at any point but at the end of a
+   frame. Its messes the binding and initialization process of the
+   components up. This function is bad news and now everyone is told
+   so.
+
+* Changed logging of render image applying
+
+ - There is no logging message anymore in case a image tag lacks the
+   filename attribute. Reporting this seemed like a good idea at
+   first, how ever in case the image tags are used to dynamically
+   display a image, this message is not useful and spams the output.
+ - There is a logging message now in case there is a filename
+   attribute but the image loader fails to fetch a image assigned to
+   this filename. In case this happens its very likely that something
+   is wrong with the resources or the filename is wrong.
+
+* Fixed typo in IDs of scrollpanel
+
+* Changed checkbox tick element from image to panel
+
+ - The #select element actually does not show a image at all because
+   the tick image is displayed using a image overlay effect that does
+   not require a image element
+ - The image element without filename causes a warning to be displayed
+
+* Collections.emptyIterator() is 1.7 API but we don't want to give up 1.6
+
+We don't want to give up 1.7 compatibility right now but
+Collections.emptyIterator() is Java 1.7 API. For now we've made our own
+replacement. If we finally switch over to 1.7 we can use
+Collections.emptyIterator() directly.
+
+* don't bind LibGDX-Desktop examples at integration-test phase anymore
+
+This made the examples automatically execute in a "mvn install" call.
+This has now been disabled. You can still run the examples manually with
+"mvn antrun:run".
+
+* Merge pull request #178 from mkaring/1.4
+
+Refactoring Nifty 1.4
+
+* Improved SizeValue implementation
+
+ - Creation of size values instances don't require String parsing
+   anymore in most cases
+ - SizeValueType added to bundle the type related data
+ - Improved test coverage
+ - Fixed wildcard computed value implementation
+ - Added proper separation of fixed and computed values
+
+* Set libGDX dependencies to use release version
+
+* Added missing JSR-305 annotations to screen controller
+
+Also added the annotations to the implementing interfaces
+
+* Fixed fetching minimal size for scrollbar handle
+
+* Merge remote-tracking branch 'GitHub-void/1.4' into 1.4
+
+* Fixed initialization order of list box control
+
+* Fixed screen handling in element class
+
+* Cleanup element class and layouter test
+
+ - avoid nullity warning
+ - improved output of layout test
+
+* Cleanup of NiftyStopWatch
+
+ - Slightly improved performance by using a not synchronized collection
+ - Avoided creation of log message in case logging is disabled
+ - Avoided object creation to receive timestamp
+
+* Full refactoring of Nifty
+
+ - Applied JSR-305 annotations
+ - Fixed potential null problems
+ - Got rid of most Null-Objects
+ - Implemented enum related storage system
+   -> Mainly used for EffectEventId related storages
+ - Got rid of Hashtables
+ - Added early checks for problems
+ - Added a lot of additional log warnings
+ - Formatted code to meet Nifty specifications
+ - Implemented proper use of XmlPullParserFactory
+ - Fixed ID bug
+
+* Applied JSR-305 to Niftys SPI
+
+* Refactored ObjectPool
+
+ - Added JSR-305 annotations
+ - Removed pooling of small objects
+ - Changed pool to soft reference pool
+
+* Cleaned up the pulsators
+
+ - Added JSR-305 annotations
+ - Handled possible runtime exceptions properly
+
+* Cleaned up the time interpolators
+
+ - Added JSR-305 annotations
+ - Handled possible runtime exceptions properly
+
+* Cleaned resource loader implementations
+
+- Added JSR-305 annotations
+- Improved exception handling
+
+* Cleaned code of Element effect cache class
+
+ - Placed JSR-305 annotations
+ - Improved performance using EnumMap instead of HashTable
+   (smaller memory size, faster access time)
+ - Applied default values properly
+
+* Added JSR-305 implementation to dependencies
+
+* Batch Renderer (LWJGL/JOGL): Fix potential crash render empty batches
+
+This was first discovered and fixed by 3xp0n3nt for the
+LwjglBatchRenderBackend but the same issue exists for the CoreProfile
+renderers as well as the Jogl Batch-Implementations. This commit fixes
+these potential problems as well.
+
+* Merge pull request #173 from mkaring/1.4
+
+Added missing init call in scroll panel
+
+* Added missing init call in scroll panel
+
+The missing init call rendered the scroll panel unusable. This error
+was introduced during the API change of the init function.
+
+* Merge pull request #170 from Joris-van-der-Wel/1.4
+
+SizeValue refactoring and wildcard text wrapping
+
+* Merge pull request #172 from 3xp0n3nt/deprecation-cleanup
+
+Remove internal use of deprecated Element methods.
+
+* Remove internal use of deprecated Element methods.
+
+Remove all uses of all deprecated methods in Element class. The
+deprecated methods are still there, but they are not used anymore
+internally.
+
+There is also one deprecated method in Element class that is supposed to
+delegate to the non-deprecated version, but instead it is duplicating
+the non-deprecated version's code. Make this deprecated method delegate
+to the non-deprecated version.
+
+Also remove a duplicated word from a javadoc comment in the
+getValueAsInt method of SizeValue class.
+
+There are some faux changes present where the entire file appears to
+have changed, but it's just due to the removal of 
+ carriage return
+characters in the line endings.
+
+* #167 Fix BatchRenderBackendCoreProfile (JOGL/LWJGL): enable GL_BLEND
+
+Blending should be enabled for Nifty to render correctly. Usually the
+RenderDevice-Implementations do that in their render() method. The new
+batched render backends for core profile did not do that yet. This
+commit should fix that.
+
+* Merge branch '1.4' of https://github.com/void256/nifty-gui into 1.4
+
+* 1. A refactoring of SizeValue so that a null value is now a real value (width="default" or width="d"), this avoids "== null" checks.
+
+2. A refactoring of SizeValue so that values that are computed (like in preProcessConstraintWidthThisLevel) do not have to store additional state somewhere. For example if the "default" value is used (which does a sum or max when using HorizontalLayout for example), the SizeValue will tell you the computed pixel value, but also that the computation was part of the "default" value.
+
+3. Two new size values "sum" and "max", this is similar to the behaviour that was already present, namely compute the total/maximum heights of the children. These values are useful when you would like to be explicit. It also lets you use sum/max in any layout.
+
+4. Text elements now support width="*" (wildcard) in horizontal layouts in combination with word wrap. This also lets you have parent panels that automatically base their height on these text elements. This allows for reimplementing the chat control using a ScrollPanel instead of a ListBox so that chat lines can wrap AND have player images. See issue #169
+
+I also wrote test cases to test for this new behaviour.
+I did my best to ensure backwards compatability. All the test cases pass, and I compared all the examples with a nifty-gui without these changes.
+
+* #137: removed unused params from Controller interface (breaks 1.3 API!)
+
+The parameter "controlDefinitionAttributes" in the bind() and init()
+methods of the Controller interface was not really used since the same
+information was available in the "parameter" parameter. Therefore the
+"controlDefinitionAttributes" parameter has now been removed.
+
+Unfortunately this change will break backwards compatibility with the
+1.3 API. Your own custom controls have to be changed to the new method
+signatures now.
+
+Since the remaining parameter: "parameter" used a java.util.Properties
+instance it would allow changing values which was confusing as well.
+Therefore it has been changed to a dedicated instance:
+"de.lessvoid.nifty.controls.Parameters" provides access to the control
+parameters in a similar way but will provide only methods to get values
+(and not set them). Much cleaner that way - but unfortunately is not
+compatible with 1.3 as well.
+
+Migration guide for 1.3 users:
+
+de.lessvoid.nifty.controls.Controller Interface has been changed.
+
+old:
+
+* void bind(Nifty nifty, Screen screen, Element element, Properties
+parameter, Attributes controlDefinitionAttributes);
+
+* void init(Properties parameter, Attributes
+controlDefinitionAttributes);
+
+new:
+
+* void bind(Nifty nifty, Screen screen, Element element, Parameters
+parameter);
+
+* void init(Parameters parameter);
+
+So you have to remove the last parameter of both methods. Additionally
+you have to change "Properties" into "Parameters" for the new bind()
+method. If you actually used that parameter to access the control
+parameters you shouldn't have to change anything else since the
+Parameters class will provide the same API as Properties and Attributes
+did before.
+
+* #138: Fixed new clipping rectangle intersection code
+
+The original commit did not respect the global offset x, y values in all
+cases which lead to clipping not working correctly in some cases.
+
+* Merge branch '1.4' of git@github.com:void256/nifty-gui.git into 1.4
+
+* #138: [1.4] childClip inside childClip does not work correctly
+
+Originally if you had a childClip="true" element in another
+childClip="true" element the clipping rectangle of the child was ignored
+and the first encountered clipping rectangle (childClip="true" element)
+was used.
+
+This has now been changed and the following cases are handled:
+
+1. If the clipping rectangle of the child element is completely outside
+of its parent clipping rectangle then the clipping rectangle is not
+changed.
+
+2. Is the child clipping rectangle completely inside its parent clipping
+rectangle then the child clipping rectangle will be used as the new
+clipping rectangle.
+
+3. If both rectangles intersect each other the interesection rectangle
+will be calculated and used.
+* Merge pull request #165 from 3xp0n3nt/double-imagemode-for-changeimage
+
+Add support for two imageMode's with ChangeImage.
+
+* Merge pull request #164 from 3xp0n3nt/minor-cleanup
+
+Various minor cleanups.
+
+* Add support for two imageMode's with ChangeImage.
+
+The ChangeImage effect is not very, ahem, effective because it requires
+you to use the same imageMode value for both active and inactive images.
+
+This is a ridiculous constraint because one of the most common - and
+useful - applications of ChangeImage is to modify a button's state using
+a sprite sheet. For example, it can be combined with onHover or onClick,
+etc, and the button sprite sheet can contain a "normal" (inactive)
+sprite, a "hover" sprite, and a "clicked" sprite.
+
+Unfortunately this setup requires the active imageMode and inactive
+imageMode's to be separate. How to solve this problem?
+
+It's elementary, my dear Watson.
+
+Check for two new keys in the getImageModeProperty method of
+ChangeImage, imageModeActive and imageModeInactive. If they are not
+present we simply revert to the old behavior and check for the imageMode
+key. This preserves backwards-compatibility because their use is
+optional.
+
+I've already tested it and it works fine.
+
+* Various minor cleanups.
+
+- Suppress deprecation in DropDownListBoxSelectionChangedEventSubscriber.
+
+- Format javadoc in EndNotify.
+
+- Remove useless comments, improve method parameter names, remove
+  redundant casts to float, remove commented-out code, improve
+  formatting in Falloff.
+
+- Invert if clause in ImageModeHelper to return immediately if
+  imageModeProperty in getAreaProviderProperty is null rather than
+  surrounding the entire method's logic in an 'if imageModeProperty !=
+  null' clause. Also return null in the else clause since before the else
+  would simply fall through and return null at the end of the method
+  anyway. Do the same with getRenderStrategyProperty.
+
+- Add @Override annotations where appropriate and format javadoc in
+  Screen.
+
+* Merge pull request #162 from 3xp0n3nt/button-release-event
+
+Publish ButtonReleaseEvent's for buttons.
+
+* Publish ButtonReleaseEvent's for buttons.
+
+This allows subscriptions to ButtonReleaseEvent's using
+NiftyEventSubscriber annotations, rather than having to use the "old"
+method of interactOnRelease.
+
+* bring back getElements() as a @deprecated method
+
+was removed by fd893333605edc353828cf1dd60584afae3a1b20 but really
+should be marked @deprecated for easy migration to 1.4 from 1.3
+
+* Merge pull request #161 from 3xp0n3nt/update-libgdx-poms
+
+Update libGDX pom's.
+
+* Update libGDX pom's.
+
+Update libGDX version from 0.9.9-SNAPSHOT to 1.0-SNAPSHOT in
+nifty-examples-libgdx and nifty-renderer-libgdx pom's. Add helpful
+comments to the desktop and android pom's in nifty-examples-libgdx.
+Clean up formatting of nifty-examples-libgdx and nifty-renderer-libgdx
+pom's.
+
+* Merge pull request #159 from 3xp0n3nt/gdx-mouse-cursor-upgrade
+
+Update libGDX custom mouse cursor support.
+
+* Merge pull request #160 from 3xp0n3nt/fix-jogl-examples-name
+
+Fix name of JOGL examples module in pom.
+
+* Fix name of JOGL examples module in pom.
+
+Make the name consistent with every other examples module in nifty.
+
+* Update libGDX custom mouse cursor support.
+
+I added support for custom mouse cursor images to the libGDX library
+itself, which was missing, so the method of setting custom mouse cursor
+images in GdxBatchRenderBackend class of nifty-renderer-libgdx module
+was a nasty hack.
+
+This nasty hack involved setting the system mouse cursor image to an
+invisible texture of the smallest allowable size, and then rendering the
+custom mouse cursor image as a separate batch after all other batches
+were rendered. This means it added an extra openGL draw call as well.
+Yuck.
+
+We also had to update the texture's vertex buffer position data with the
+current mouse coordinates every frame. It also was buggy on OS X, and
+many times the system cursor would be displayed on top of the custom
+cursor, or the system cursor would appear as a single-pixel dot of
+various colors along with the custom cursor.
+
+This hack also made the mouse cursor very laggy. Nasty. Nasty. Nasty!
+
+So now that true custom mouse cursor image support has been added to the
+libGDX library, this nasty hack disappears forever, and custom mouse
+cursor support is much, much better! :D
+
+Windows operating system is very picky about it's mouse cursor images,
+and the libGDX mouse cursor image support requires that any custom
+cursor image have a width and height that are powers-of-two greater than
+zero.
+
+We're going one step further and making the two custom mouse cursors
+that ship with nifty (nifty-cursor.png & mouse-cursor-textfield.png)
+into images of size 32x32, since not only are the width & height
+powers-of-two, but this is the size of the system cursor in Windows,
+which provides maximum compatibility.
+
+The hotspots of these two custom mouse cursors are unaffected, as are
+their "perceived" sizes; only the invisible background increases in size
+to add the necessary padding to get them to be 32x32.
+
+Integration testing shows no problems in OS X, but Windows and Linux
+integration testing should be done by running the libGDX nifty examples
+on those systems.
+
+* Merge pull request #158 from 3xp0n3nt/update-drop-down-builder
+
+Add displayItems method to DropDownBuilder.
+
+* Merge pull request #157 from 3xp0n3nt/minor-cleanups
+
+Minor cleanups.
+
+* Merge pull request #156 from 3xp0n3nt/cleanup-screentest
+
+Clean up ScreenTest & upgrade EasyMock.
+
+* Merge pull request #155 from 3xp0n3nt/nullpointerexception-fix
+
+Fix NullPointerException in Nifty class.
+
+* Merge pull request #153 from 3xp0n3nt/element-class-cleanup
+
+Cleanup Element class.
+
+* Add displayItems method to DropDownBuilder.
+
+* Minor cleanups.
+
+1) Remove useless, incorrect, outdated comment from Nifty constructor.
+
+2) Remove strange, invalid @created javadoc from
+SpecialValuesReplaceTest. It creates a warning when running mvn site on
+nifty-core.
+
+3) Rename android module in nifty-examples-libgdx from 'Main Android' to
+'NiftyExamples for LibGDX - Android' so that it's clear when building
+Nifty with the maven reactor that the module is a submodule of
+nifty-examples-libgdx.
+
+4) Rename core submodule in nifty-examples-libgdx from 'Main Core' to
+'NiftyExamples for LibGDX - Main Core' so that it's clear when building
+Nifty with the maven reactor that the module is a submodule of
+nifty-examples-libgdx.
+
+5) Rename desktop submodule in nifty-examples-libgdx from 'Main Desktop'
+to 'NiftyExamples for LibGDX - Desktop' so that it's clear when building
+Nifty with the maven reactor that the module is a submodule of
+nifty-examples-libgdx.
+
+6) Create a logging.properties file for nifty-examples-libgdx, and
+configure all logging to Level.WARNING. Remove the static Logger
+instance from LibgdxExampleApplication and use a LogManager to load the
+logging.properties file instead.
+
+7) Fix an indentation error in nifty-examples-libgdx parent pom file.
+
+8) Fix code style violation in GdxInputSystem by removing unnecessary
+uses of the 'this' keyword.
+
+* Clean up ScreenTest & upgrade EasyMock.
+
+Upgrade EasyMock dependency in main pom.xml to version 3.1.
+
+Change EasyMock imports from package org.easymock.classextension.* to
+org.easymock.*, since the classextension package is deprecated; i.e.,
+the functionality has been merged into standard EasyMock in version 3.1.
+
+When stubReturn-ing the getMsTime() method on the TimeProvider mock,
+specify the return value as 0L to satisfy the compiler, since it needs
+to return a long, rather than casting the 0 to a long, since it's more
+elegant.
+
+* Fix NullPointerException in Nifty class.
+
+The Bug: If Nifty.exit() is called more than once in a row, or if the
+current Screen is an instance of NullScreen when Nifty.exit() is called,
+then a NullPointerException is thrown in the current Screen's
+endScreenMethod, specifically when it tries to call
+Nifty.resetMouseInputEvents() on a null instance of Nifty within the
+resetLayers() method, since the Nifty instance will be null if the
+current Screen is an instance of NullScreen.
+
+The scenario above specifically occurs when exiting from the
+AllExamplesMain example demo from nifty-examples when running the
+example from nifty-examples-libgdx. When the "Exit" menu choice is
+clicked in the menu scrollPanel, and the button labeled "yes" is
+clicked, Nifty.exit() is called, but the main application window itself
+stays open. The NullPointerException described above occurs when closing
+the main application window because that in turn calls
+LibgdxExampleApplication.dispose(), which in turn calls Nifty.exit(),
+like it should because it can't assume that Nifty.exit() has already
+been called.
+
+The Fix: Don't call the endScreen method in Nifty.exit() if the current
+Screen is null, i.e., an instance of NullScreen. In fact, since
+Nifty.exit() is designed to only ever be called once, and since it
+should really be idempotent since that increases robustness, simply
+return immediately from Nifty.exit() if the current Screen is null.
+Since the first invocation of Nifty.exit() will always make the current
+screen an instance of NullScreen, this is effectively the same as
+returning immediately if Nifty.exit() has already been called.
+
+Add a test to ensure that calling Nifty.exit() multiple times in a row
+does not throw a NullPointerException.
+
+* Cleanup Element class.
+
+The Element class in nifty-core is badly in need of some basic cleanup.
+
+Remove useless, tautological comments/javadoc. Add some useful
+comments/javadoc where necessary. Improve comment/javadoc grammar,
+sentence structure, and spelling.
+
+Rename getElements to getChildren, add to addChild, and the overloaded
+add method that takes an index parameter to insertChild because those
+methods names are infinitely clearer. Rename these methods in all
+calling classes. Also rename elements field to children.
+
+Recreate the two old add methods, but mark them as deprecated and
+delegate to the new methods.
+
+Fix code style violations so that it matches the code style of the rest
+of the project.
+
+No actual logic is altered. All tests are passing, and
+integration-testing reveals no problems.
+
+* Merge pull request #154 from 3xp0n3nt/libgdx-input-minor-cleanup
+
+Clean up input files in nifty-renderer-libgdx.
+
+* Merge pull request #152 from 3xp0n3nt/off-by-one-pixel-fix
+
+Fix off-by-one pixel bugs.
+
+* Clean up input files in nifty-renderer-libgdx.
+
+Update comments and remove mapping of Input.Keys.SYM to
+KeyboardInputEvent.KEY_SYSRQ because it's incorrect. The SYM key seems
+to be the Apple key on OS X, but it is buggy on the libGDX side, so just
+map it to nothing for now.
+
+* Fix off-by-one pixel bugs.
+
+This is really two separate but related bugs, related because they both
+cause off-by-one pixel errors. The first affects nifty-core, but the
+second only affects nifty-renderer-libgdx.
+
+Bug #1) Many classes in the effects and layout packages in nifty-core
+are using a method in the SizeValue class called getValue that returns a
+floating point value. The issue is not with this method itself per se,
+but with callers of the method, who really need an integer value, and
+cast the returned floating point value to an integer, effectively
+discarding everything to the right of the decimal. It can easily be
+verified that calling getValue and then casting to an integer returns
+incorrect values much of the time. This bug is now verified with a
+simple test in SizeValueTest. The bug rears its ugly head the worst when
+converting a simple pixel value of say "212px" from a SizeValue whose
+percent is set to 100, to a floating point pixel value, and then casting
+it to an integer: the result will always be 211 and NOT 212. There are
+countless other values that return a similar result when the SizeValue
+percent is set to 100.
+
+The solution to this error, which rectifies issues such as creating
+quads at off-by-one pixel sizes, is to change all callers of getValue
+that actually need an integer value to use the preexisting getValueAsInt
+method, BUT since it ALSO simply casts the floating point value of the
+getValue method to an integer, persisting the bug, we modify the
+getValueAsInt method to use Math.round, and round the result returned by
+getValue to the nearest integer instead of casting it. This returns much
+more correct values, and fixes the bug. This solution has been
+integration-tested without noticing the introduction of any other
+regressions.
+
+There is an additional test in SizeValueTest that verifies that this
+off-by-one SizeValue bug is fixed. The javadoc for SizeValueTest has
+also been improved, especially noteworthy is the warning to NOT cast the
+result of getValue to an integer, but rather to use getValueAsInt.
+
+Classes that call SizeValue.getValue method, and do NOT cast to an
+integer, but store the result in a floating point variable have not been
+modified as this is a legitimate use of the getValue method.
+
+Bug #2) nifty-renderer-libgdx is not configured to use exact openGL
+pixelization. Configure nifty-renderer-libgdx to use exact openGL
+pixelization for 2D rendering as officially recommended in a faq on
+opengl.org at:
+
+http://www.opengl.org/archives/resources/faq/technical/transformations.htm#tran0030
+
+* Merge pull request #151 from 3xp0n3nt/gdx-bug-fixes
+
+Fix bugs in nifty-renderer-libgdx.
+
+* Fix bugs in nifty-renderer-libgdx.
+
+Fix several bugs in nifty-renderer-libgdx module:
+
+1) Attempting to type a capital C (with either SHIFT + C or c with
+CAPSLOCK on) in a TextField control is not typing a capital C but
+instead is activating backspace. It turns out that the GdxInputSystem
+needs to set the nifty key code to 0 for character keys, but in fact, it
+is setting the key code to a completely incorrect value for every single
+character key. The problem just happened to manifest with 'C' because it
+is sending the key code of backspace with it. Now, for all printable
+character keys, the key code sent to nifty will be 0, since it should be
+ignored for all printable character keys - you only need the character
+itself. Key codes for non-printable control keys are already correct,
+and are not affected by this fix.
+
+2) Forward delete is not working at all in a TextField control. It turns
+out that GdxKeyboardInputEvent.getNiftyKeyCode, which maps libGDX key
+codes to Nifty key codes, did not have a mapping set up for forward
+delete. Add a mapping for forward delete so that it works in TextField
+controls.
+
+3) Set forward delete to repeat in nifty-examples-libgdx using the
+GdxKeyRepeatSystem.
+
+* Merge pull request #150 from 3xp0n3nt/mouse-hover-bug-fix
+
+Fix hover effects after screen transitions.
+
+* Fix hover effects after screen transitions.
+
+Process a fake mouse event with current coordinates so that Nifty will
+activate hover effects for any element currently under the mouse, and
+will also deactivate any hover effects for any element NOT currently
+under the mouse. This prevents the undesirable behavior of having an
+element under the mouse that should be in a hovered-effect state, but is
+not due to the screen change, and of having an element that is NOT under
+the mouse that should NOT be in a hovered-effect state, but IS due to
+the screen change.
+
+* manual added (both pdf and .pages source document)
+
+* Merge pull request #147 from 3xp0n3nt/minor_fixes
+
+Various minor fixes.
+
+* Various minor fixes.
+
+Details:
+
+- Add compile scope to xpp3 dependency in core pom. The scope was
+missing, and the default is 'compile', anyway. It's best not to rely
+on the defaults.
+
+- Fix spelling errors in NiftyInputConsumer and ControlsDemo.
+
+- Remove javadoc for nonexistent parameter in BatchRenderBackend.
+
+- Add @Override to toString method in ResolutionControlJOGL.
+
+- Fix getScreen method in ControlsDemo.  The getScreen method returns
+"demo" when it should return "start". The "demo" screen is the second
+screen in the ControlsDemo example. If someone were to use this method,
+they would miss the intro on the "start" screen.  Plus, all the
+getScreen method in every other NiftyExample implementation return
+"start".
+
+- Move comment to the correct location. Move the "internal
+implementations" divider comment above the first private method in
+LwjglBatchRenderBackend, where it should be. There is one private method
+that is above the comment.
+
+- Fix parsing of the "fillRemovedTexture" property. In the LWJGL and JOGL
+batch render backends (both core and non-core), fix the parsing of the
+boolean system property called "fillRemovedTexture". The current
+implementation doesn't respect the default setting; it will always be
+false, even if the default setting is set to true. The problem is that
+it should use the parseBoolean method instead of the getBoolean method
+because getBoolean tries to call System.getProperty, when
+System.getProperty is already being called, so it would result in a
+redundant call to System.getProperty, whereas the parseBoolean method
+just simply converts the result of System.getProperty from a String to a
+Boolean, if the value is "true" or "false", which is exactly what we
+want.
+
+- Fix crashing bug in LwjglBatchRenderBackend. Don't attempt to render an
+empty batch, i.e., if its vertex buffer is empty, because the render
+method will attempt to access non-accessible elements, throwing some
+nasty exception and crashing the program. This happens when the batch
+pool reaches maximum capacity, causing it to double in size, i.e., from
+2 to 4, and the problem is that in some cases it will only have enough
+data for the 3rd batch, and the 4th batch will be completely empty.
+
+- Fix example with dynamic drop down list. The problem is that there is
+not enough room for the dynamic drop down list to be inserted above the
+static drop down list in the drop down example, so increase the size of
+the spacer panel between them from 8px to 70px to make room. Otherwise
+they overlap, which looks bad. This may be a bug in Nifty, as it seems
+like it should make space on the fly instead of having to manually do
+it.
+
+* .gitignore added for libgdx and eclipse specific ignores
+
+* Merge pull request #146 from 3xp0n3nt/gdx-renderer-dev
+
+Create LibGDX renderer and examples.
+
+* Create LibGDX renderer and examples.
+
+The main changes are the addition of two new Maven modules to Nifty:
+nifty-renderer-libgdx and nifty-examples-libgdx. Changes to existing
+modules are listed at the very bottom. All Nifty tests are passing, and
+the two new modules are working perfectly after extensive integration
+testing.
+
+Important Note: Android / Nifty integration is a work in progress. The
+LibGDX renderer seems to work on Android, but it has not been
+extensively tested, especially because of the fact that the size of the
+resources used in the Nifty Examples module are designed for desktops,
+not mobile devices. The Android submodule of the nifty-examples-libgdx
+module is broken at this time.
+
+Important Note: iOS is completely unsupported at this time.
+
+Detailed changes:
+
+New Module 1: nifty-renderer-libgdx:
+
+The new Nifty LibGDX renderer handles mouse & keyboard input, sound, music,
+custom mouse cursors, graphics, pretty much anything Nifty can throw at
+it ;-). It runs the main Nifty demo, the default controls demo, and the
+Nifty 1.2 tutorial demo.
+
+It uses the new BatchRenderBackend interface for rendering, but not yet
+core profile. The renderer only uses OpenGL 1.0 functionality for
+maximum compatibility. I have a very old computer, so even if I write a
+core profile renderer, I would not be able to test it or run it :'(.
+
+The LwjglBatchRenderBackend served as a reference; in fact, the renderer
+doesn't really make use of any high-level features of LibGDX; the
+original RenderDevice implementation of the LibGDX renderer written by
+Martin Karing <nitram@illarion.org> tried to take that route, but there
+were too many issues, and I eventually removed it completely and focused
+on porting the LwjglBatchRenderBackend instead. LibGDX does use LWJGL
+for it's desktop implementation after all.
+
+The real "magic" that was required to port LwjglBatchRenderBackend to
+LibGDX involved using GL_TRIANGLES in the call to glDrawArrays. The
+reason for this is that LibGDX only provides OpenGL ES functionality,
+since it must work on Android and iOS, and GL_QUADS is not available in
+OpenGL ES. Using GL_TRIANGLES (triangle list) requires the duplication
+of two vertices per quad, since two joined triangles must be formed to
+create a quad, and they share two vertices. This results in a total of 6
+vertices per quad, but the performance should be made up for by the fact
+that OpenGL LOVES triangles, and gobbles them up at a faster rate than
+large, unwieldy quads, which it has to chew into triangles eventually
+anyway, lol.
+
+New Module 2: nifty-examples-libgdx:
+
+This is a complete LibGDX project, set up Maven-style. It has a parent
+module with pom packaging, and three sub-modules, core, desktop, and
+android. The core submodule contains a LibGDX example application. The
+desktop and android submodules merely instantiate a NiftyExample and
+pass it to the LibGDX example application in the core submodule.
+
+Three main NiftyExample demos are provided, and work just fine:
+Nifty Main Examples Demo
+Nifty Default Controls Demo
+Nifty 1.2 Tutorial Demo
+
+The example application was set up in IntelliJ with Maven using the
+LibGDX Maven archetype project, located at:
+https://github.com/libgdx/libgdx-maven-archetype
+
+Changes to existing modules / files in Nifty:
+
+pom.xml:
+  Add nifty-renderer-libgdx and nifty-examples-libgdx as modules.
+
+nifty-examples/src/main/java/de/lessvoid/nifty/examples/controls/ControlsDemoStartScreen.java:
+  Add "LibGDX" as a dropdown choice in the controls demo.
+
+nifty-examples/src/main/resources/all/intro.xml:
+nifty-examples/src/main/resources/all/libgdx.png:
+  Add LibGDX mention & logo in main example credits.
+
+nifty-core/src/main/java/de/lessvoid/nifty/input/keyboard/KeyboardInputEvent.java:
+  Create an empty default constructor because GdxKeyboardInputEvent, which
+  subclasses KeyboardInputEvent, makes use of a default constructor, and needs
+  to call super(). Also add a public setData method, to initialize the data for
+  the object, so it doesn't have to be done in the constructor. This is
+  necessary because GdxKeyboardInputEvent relies on a pool to obtain new
+  instances, and the data required by Nifty to initialize the KeyboardInputEvent
+  with the parameterized constructor is not yet available. These changes are
+  made by Martin Karing <nitram@illarion.org>, who wrote most of the original
+  input system for the LibGDX renderer.
+
+* Update text in standard controls demo to 1.4
+
+* #139 fix display of initial CheckBox state
+
+The CheckBox didn't display its correct state when it was shown after
+being hidden.
+
+Example: CheckBox on a hidden Tab and change it's state by code. When
+you then display the tab the Checkbox won't show it's correct state.
+
+I've modified the TabsControlDialog in the standard controls demo to
+test this.
+
+* Merge pull request #140 from mkaring/1.4
+
+1.4 - TabGroup bugfix
+
+* Fixed removal of tab buttons during the binding phase of the component
+
+When the template was not yet deleted the remove function triggered the removal on the wrong button element. This issue is now fixed.
+
+* #136 Unsubscribe all elements in element.onEndScreen()
+
+Up until now only controllers have been automatically unsubscribed when
+the element it was attached to ended. This worked for most cases but it
+didn't work when you've manually subscribed to events of controls inside
+other controls. While Nifty iterated child elements it only
+automatically unsubscribed controls for the parent element in that case.
+
+Now all elements in the hierachy of the removed/ended element will be
+automatically unsubscribed.
+
+* adjusted version to 1.4.0-SNAPSHOT in pom.xml
+
+* JOGL: access to unprocessed events added and fixed char conversion newt
+
+Conflicts:
+	nifty-renderer-jogl2/src/main/java/de/lessvoid/nifty/renderer/jogl/input/JoglInputSystem.java
+
+* JOGL: add ES2 support to the core batched renderer
+
+* JOGLNiftyRunner: Exit application at dispose of window.
+
+Signed-off-by: Xerxes Rånby <xerxes@zafena.se>
+
+* nifty-renderer-jogl2: Switch AWT -> NEWT
+
+Signed-off-by: Xerxes Rånby <xerxes@zafena.se>
+
+* JOGLNiftyRunner: use canvas preferred size to set frame insets.
+
+ResolutionControlJOGL: likewise.
+
+Signed-off-by: Xerxes Rånby <xerxes@zafena.se>
+
+* Issue #135: added missing image resources for treebox control
+
+* #106: Attribute "renderStrategy" added to nifty.xsd
+
+* Starting with this commit, the correct XSD for a Nifty version is the
+"nifty.xsd" file that ships with Nifty and is included in the nifty.jar
+as a resource.
+
+The correct namespace is "http://nifty-gui.lessvoid.com/nifty-gui" and
+you can now finally use this namespace to correctly validate
+control-definition and style-definition XML files :)
+
+Nifty XML:
+  <nifty xmlns="http://nifty-gui.lessvoid.com/nifty-gui">
+
+Nifty-Style XML:
+  <nifty-styles xmlns="http://nifty-gui.lessvoid.com/nifty-gui">
+
+Nifty-Controls XML
+  <nifty-controls xmlns="http://nifty-gui.lessvoid.com/nifty-gui">
+
+* JogAmp 2.0.2-rc12 update
+
+nifty-renderer-jogl2/pom.xml: Update jogamp.version to 2.0.2-rc12
+
+Signed-off-by: Xerxes Rånby <xerxes@zafena.se>
+
+* JOGL: add NiftyTutorialJOGL and extract setup code to JOGLNiftyRunner
+
+* Enabled Core-Profile/Batch-Rendering for TutorialMainNativeLWJGL
+
+* BatchRenderDevice: fixed text encoded color support
+
+* added NullSoundHandle to NullSoundDevice for improved stability
+
+* fix resolution switching for batched renderer using lwjgl and jogl
+
+* fix core profile GL extension check so that no silly GL error appears
+
+* JOGL: add core profile batched renderer support
+
+* JOGL: batch renderer support added
+
+* JOGL: mouse move support added to JoglInputSystem
+Conflicts:
+	nifty-renderer-jogl2/src/main/java/de/lessvoid/nifty/renderer/jogl/input/JoglInputSystem.java
+
+* adding changes to main pom.xml
+
+* gitignore added
+
+* update jogl version
+Conflicts:
+	nifty-renderer-jogl2/pom.xml
+
+* JOGL examples project added
+
+* fixes #109: Assigning an id from a custom attribute to a control
+
+resolveParameters() needs to happen before makeFlatControls() since
+makeFlatControls() resolves the ids and propagates the id to child
+elements. which is ok ... unless someone comes and changes the actual
+ids with some $parameter! In that case makeFlatControls() did nothing
+since there was no actual id available! This commit seems to fix that.
+I'm not sure if something else breaks now although all the standard
+demos/examples I've checked seem to work.
+
+This part of Nifty is kinda scary! Note to self: make a better
+implementation of all of this for Nifty 2.0!
+
+* Updated LWJGL to 2.9.0
+
+* #110: Updated Slick2d to Build "20121001-264 "and lwjgl-2.9.0
+
+* Merge branch '1.4' of git@github.com:void256/nifty-gui.git into 1.4
+
+* Fix #56 Ignore duplicate popup close calls (complain in log instead)
+
+* Merge pull request #118 from gsimard/color_image
+
+Color field added to image element.
+
+* Color field added to image element.
+
+* LwjglBatchedRendererBackend: Handle missing images without NPE
+
+this fixes some missing vertex buffer bind() calls as well
+
+* method markBatchRenderImageAsUnloaded() added to NiftyImage
+
+This method allows you to modify a backing texture externally and then
+notify Nifty that you've changed the texture. Nifty will then upload the
+image to the texture atlas the next time the image is accessed. Without
+this method Nifty would never know about the change of the texture and
+would never update the texture atlas with the updated texture. This
+method is specific to the new BatchRenderer.
+
+* LwjglBatchRenderBackendCoreProfile: BatchRenderBackend for Core Profile
+Conflicts:
+	nifty-examples/src/main/resources/logging.properties
+
+* console.fnt removed from examples since the font is in the style-black
+
+* jglfont-core-1.2 added to enable embedded textcolor for batched renderer
+
+* improve renderEngine.createImage() JavaDoc since it was changed in 1.3.3
+
+* workaround for issue #73 added
+
+The KeyboardInputEvent constructor sets the character instance variable
+to 0 when the control-key is pressed. This prevents characters you can
+only reach with the help of control and alt, like AltGr+Q on Windows to
+insert a @ character for certain keyboard layouts.
+
+To prevent this issue I've now removed the "if (controlDown)" check in
+the constructor. This means any character code pressed while any of the
+special keys is down (alt, shift, control) will be processed as
+a regular key.
+
+However, the InputMapping implementation, f.i. TextfieldInputMapping
+will handle some control+key combinations like ctrl+A or ctrl+C and so
+correctly and will prevent any character input into the textfield in
+that case. Other, unhandled combinations will still find it's way to
+the textfield which is not quite right but shouldn't do any harm. For
+instance you can now press ctrl-P and a you would see "P" in the
+textfield.
+
+* shut off spamming by changing logging from INFO to FINE, closes #65
+Conflicts:
+	nifty-core/src/main/java/de/lessvoid/nifty/NiftyStopwatch.java
+	nifty-core/src/main/java/de/lessvoid/nifty/effects/impl/Hide.java
+	nifty-core/src/main/java/de/lessvoid/nifty/effects/impl/Show.java
+
+* Extract NiftyImageManager differences between batched and non-batched
+
+additionally this fixed non batched rendering which the
+NiftyImageManager broke
+Conflicts:
+	nifty-examples/src/main/resources/logging.properties
+
+* BatchRenderer Image Management corrected for newly loaded screens
+
+When a new XML file is loaded with nifty.fromXml() all existing screen
+based cache information in NiftyImageManager will now be removed. This
+fixes an issue that old images (referenced by old screens with the same
+id) are still uploaded to the texture atlas even though they are not
+needed in the newly version of the screen with the same id.
+
+The same fixes have been applied when screens are being removed
+dynamically with nifty.removeScreen(). So now everything that's being
+uploaded to the texture atlas is really only the images that are needed.
+
+It was possible that the onEndScreen() event could be
+triggered from a nifty.render() call which in turned would call the
+niftyImageManager to unload all the images. And then when the rendering
+continued the dynamic upload mechanism was activated that would upload
+the images again since they could still be references from other render
+calls :) To prevent this issue the onEndScreen stuff is now being
+delayed as an EndOfFrameAction which prevents this issue.
+
+So finally with this commit the whole batched renderer and extended
+image manager business should be in place correctly.
+Conflicts:
+	nifty-core/src/main/java/de/lessvoid/nifty/screen/Screen.java
+
+* we need to mark all images as unloaded in unloadScreenImages
+
+* fix failing tests
+
+* new examples and explanation added to logging.properties
+
+* Huge BatchRenderDevice update with better texture atlas management
+
+Ok, this was more work than anticipated but it should handle the texture
+atlas a lot better now. Here is a short explanation - I really need to
+blog about all of that stuff soon in more detail tho ;)
+
+So basically there is a texture atlas of a certain size. The actual
+size can be adjusted by the user. At the moment all of the examples I've
+modified to use the batch renderer uses a 2048x2048 texture which seems
+to be more than enough for all of the standard examples I've tried.
+
+This texture atlas is now filled with images for the current active
+Nifty screen. So that all the images required by the current active will
+be part of the texture atlas. To do that Nifty keeps track of which
+image belongs to which Screen when it reads a XML file or when a Screen
+is created with a Builder. This tracking is done for all loaded screens
+and even for images that are dynamically created with
+Nifty.createImage(). These dynamic images will be added to the current
+active screen. If there is no current active Screen then the images will
+still be loaded and uploaded to the texture atlas at the first
+render access.
+
+But in general Nifty will upload all images that are required for the
+current screen into the texture atlas when a new Screen is
+started. Consequently when a screen ends the texture atlas is being
+reset to an empty one.
+
+Nifty already implemented a reference counting mechanism to keep
+track of already loaded image resources. This was used to prevent
+loading the same image multiple times and it is still being used for
+this purpose. However, the process of loading an image is now separated
+into two steps:
+
+1. the actual image data is loaded into whatever image representation a
+BatchRenderBackend supports (the example implementation using native
+LWJGL will simply load an image file into a ByteBuffer) and
+
+2. the loaded image data is put into the texture atlas at a position
+that Nifty decided when it's time for this image to be a part of the
+current screen.
+
+When an image is accessed dynamically while a screen is running it will
+be uploaded at the time of the first access. For best performance static
+images - or at least ones that Nifty knows about before the screen is
+started - should be preferred so that Nifty can upload them to the
+texture atlas at the time the screen starts and not while the screen is
+already running. Although I think you can get away easily with a couple
+of image uploads if you don't access multiple images in a single
+render frame.
+
+All of this is required to keep only the currently active images in the
+texture atlas if possible. This should work quite well for most use
+cases although it's still possible to use up all of the available space
+in the texture atlas. The batch renderer still should provide much
+better rendering performance and should work well when being carefully
+used.
+
+List of changes in this commit:
+
+- lots of changes to the image managment in NiftyImageManager especially
+tracking of the screen an image is attached to
+- renderEngine.createImage() now requires a Screen instance
+- removeFromTexture() and clearAtlasTexture() methods added to
+BatchRenderBackend
+- TextureAtlasGenerator now supports removal of images as well
+- BatchRenderImage now supports upload() and unload() methods
+- font resource loading now attached to upload() and unload() as well
+
+Attention:
+
+It is unlikely but still possible that some of these changes will break
+existing code especially when this code uses internal methods like
+renderEngine.createImage() instead of nifty.createImage(). These errors
+should show up as compile errors and should therefore be easily fixed
+though.
+
+I'm sure there are other more hidden issues but I've really tried to
+keep the changes at a minimum so in general it should be fine.
+Conflicts:
+	nifty-core/src/main/java/de/lessvoid/nifty/elements/Element.java
+
+* jglfont-core-1.1 dependency added
+
+* Batch API JavaDoc cleanup
+
+* finish BatchRenderDevice and LwjglBatchRenderBackend
+Conflicts:
+	nifty-examples/src/main/java/de/lessvoid/nifty/examples/defaultcontrols/ControlsDemo.java
+
+* BatchRenderFont implements RenderFont added to fix compiler issues
+
+* first version of BatchRenderDevice implementation
+
+* Merge pull request #99 from toolforger/generics-cleanup
+
+Eliminated generics warnings (mostly by suppressing them).
+
+* Eliminated generics warnings (mostly by suppressing them).
+
+* Merge branch '1.4' of github.com:void256/nifty-gui into 1.4
+
+* Automatically filter out newline when pasting from Clipboard. fixes #97
+
+Newlines (both regular and windows ones) are now automatically
+removed when Clipboard content is being pasted into a Textfield. This
+should fix the issue.
+
+I agree that the other part of the issue (fixing the handling of
+multi-line selections) needs to be fixed as well. But this is more
+involved and should be worked on separately.
+
+* Merge pull request #95 from relu91/1.4
+
+Insert Elment
+
+* Insert Elment
+
+* Merge branch '1.4' of git@github.com:void256/nifty-gui.git into 1.4
+
+Conflicts:
+	nifty-core/src/main/java/de/lessvoid/nifty/elements/Element.java
+
+* fix findElementById() parameter mess
+
+* Merge pull request #94 from mkaring/1.4
+
+Improved slick 2d renderer
+
+* Improved slick 2d renderer
+
+Added support for resizable windows to the slick 2d renderer
+
+* Merge pull request #90 from floyd1982/1.4
+
+Added map to Element for custom user data
+
+* Improved Element's userData feature: getter is now a generic method; userData map will be only created if used first time
+
+* Added map to Element for custom user data, for example game entity objects
+
+* Merge pull request #89 from floyd1982/1.4
+
+1.4 Pull request: bugfix, getters for padding and margin fixes #85
+* Renamed method Screen.findElementByName() to findElementById() according to Element.findElementById(); old method is still available but @Deprecated
+
+* Bugfix: Element.findElementById() didn't use the to find element id passed as parameter, but local field which causes every find to return 'this'
+
+* Added getter methods for padding and margin attributes in Element
+
+* Merge branch '1.4' of git@github.com:void256/nifty-gui.git into 1.4
+
+* update jogl jars to the maven central artifacts
+
+* Merge pull request #87 from floyd1982/1.4
+
+1.4
+
+* Made Element.findElementByName() deprecated, offer Element.findElementById() instead with same functionality
+
+* Merge pull request #86 from mkaring/1.4
+
+Improved drag and drop
+
+* Improved drag and drop
+
+Added support to properly enable and disable the draggable without corrupting the state of the GUI
+
+* Merge pull request #80 from mkaring/1.4
+
+Improved drag and drop
+
+* Merge remote-tracking branch 'GitHub-void/1.4' into 1.4
+
+* Improved drag and drop
+
+Added possibility to manually change the droppable that is parent to a draggable
+
+* Take current threads contextClassLoader for resource loading, which is more flexible
+
+* Merge pull request #79 from toolforger/maven-cleanup
+
+Maven cleanup
+
+* Set Java version from property instead of by plugin configuration.
+
+This makes it somewhat easier to override the Java version from
+child POMs.
+Also, it does not nail down the maven-compiler-plugin version
+anymore. Sure enough, this bumped the version from 2.3.1 to 2.3.2
+(2.3.2 fixes http://jira.codehaus.org/browse/MCOMPILER-109).
+
+* Removed redundant compiler configuration.
+
+The same configuration is in the master pom.
+(Verified by diffing the effective POM as presented by Eclipse m2e.)
+
+* Merge pull request #78 from mkaring/1.4
+
+Fixed but in treebox
+
+* Fixed but in treebox
+
+This bug caused the tree box item converter to generate elements with duplicated IDs
+
+* Merge pull request #77 from mkaring/1.4
+
+Removed useless listener notification during layout
+
+* Removed useless listener notification during layout
+
+* Merge pull request #76 from mkaring/1.4
+
+Decrease CPU load caused by Draggable
+
+* BringToFront-method for draggable and window
+
+Both the draggable and the window control get a method that allows to move the control inside its parent to the front
+ position so its rendered on top of its siblings.
+
+* Decrease CPU load caused by Draggable
+
+The draggable control now only triggers dragging in case there is really a drag action. In case just a click is done
+the control just pulls the draggable to the front if its not in the front already.
+
+* Merge pull request #75 from mkaring/1.4
+
+TextField Bugfix
+* Merge remote-tracking branch 'GitHub-void/1.4' into 1.4
+
+* Fix selection start when typing with pressed shift key.
+
+* Merge pull request #74 from mkaring/1.4
+
+Added missing EndNotify parameter to element show
+
+* Added missing EndNotify parameter to element show
+
+* setFilter method added to CreateDroppable
+
+* Merge pull request #72 from mkaring/1.4
+
+Optimized element building performance
+
+* Optimized usage of screen layoutLayers even further
+
+* Added layouting functions again to the list box
+
+* Optimized element building performance
+
+Applied some optimizations (by removing screen.layoutLayers) to the core of Nifty and to the ListBox control
+
+* Merge pull request #70 from toolforger/1.4
+
+Silence Maven warning about unspecified character encoding.
+* Silence Maven warning about unspecified character encoding.
+Umlauts etc. should now properly work even when compiling on Windows.
+
+* Merge pull request #69 from mkaring/1.4
+
+ListBox bugfix
+
+* ListBox bugfix
+
+Fixed the problem of the default view converter of the list box that caused a wrong width calculation of the entries
+
+* shut off spamming by changing logging from INFO to FINE, closes #65
+
+* Merge pull request #68 from mkaring/1.4
+
+Improved ListBox slightly
+
+* Merge remote-tracking branch 'GitHub-void/1.4' into 1.4
+
+* Improved ListBox
+
+Some minor improvements at the list box that improve the possibilities to style the box
+
+* Merge pull request #66 from toolforger/1.4
+
+Silence unneeded warnings.
+
+* Merge pull request #67 from mkaring/1.4
+
+Added possibility to reinitialize a Effect
+
+* Added possibility to reinitialize a Effect
+
+The functions added allow to initialize a effect again in case the parameters were changed. This way changes like the
+ length parameter are applied properly.
+
+* Silence unneeded warnings.
+
+* Merge branch '1.4' of git@github.com:void256/nifty-gui.git into 1.4
+
+* ListBox improvement: add/insert/remove operation keep displayed elements
+
+This is done by getting the first currently visible item prior of
+modification the list of elements and restoring the visible item after
+the operation. This seems to work quite well and removes the otherwise
+odd possibility of elements being pushed out of view. Kudos to fbucur
+and zarch for this suggestion!
+
+The only known side effect is that the update of the visible elements
+can now happen twice. With more work this could be prevented at the
+expense of mixing otherwise unrelated operations
+(updateViewTotalCount() and restoreVisibleItem(visibleItem)). However
+since the duplicated update of the labels only happens once for a single
+add/remove/addAll/removeAll call this shouldn't really be that bad.
+
+* Merge pull request #63 from mkaring/1.4
+
+Tree Control and Input Forwarding
+
+* Merge pull request #1 from vilarion/1.4
+
+Bugfix for the input forwarding
+
+* license.txt added (2-clause "FreeBSD License" as stated in the pom.xml)
+
+* Fix logic and temporary insanity
+
+* Properly release input forwarding
+
+After releasing input forwarding in slick,
+we need to make sure that nifty receives the event it missed,
+since forwarding was not yet disabled at that time.
+
+* Fixed TreeBox interface
+
+* Merge branch '1.4' of git@github.com:void256/nifty-gui.git into 1.4
+
+* Merge pull request #62 from mkaring/1.4
+
+Tree Control
+
+* Merge pull request #61 from toolforger/1.4
+
+Made builders return the assigned ID on request.
+
+* Working version of the treeBox
+
+The tree box reached a working version. The basic design flaws are removed and it appears the control is working fine
+ now.
+
+* Made builders return the assigned ID on request.
+That's useful to pull out autogenerated IDs so post-construction code
+can find the controls and elements via findElementByName resp.
+findNiftyControl.
+
+* Improved TreeBox control
+
+The treebox control now raises the correct events and displays reacts better on interaction with the displayed entries.
+Also the test application was updated to show the capabilities of the updated control
+
+* First basic version of a new actually working tree box
+
+* output Nifty version in controls demo to show off that feature :)
+
+* Merge pull request #60 from mkaring/1.4
+
+MouseMove Events and Slick Renderer Bugfix
+
+* Consuming hover events just like normal click events in order to avoid hover events reaching hidden elements
+
+* Merge remote-tracking branch 'GitHub-void/1.4' into 1.4
+
+* fix missing scm:git in developerConnection
+
+* changed <scm> configuration to github
+
+* start the controls example at the "start" screen
+
+* close issue #58 Can not load fonts in sub folders
+
+* Merge pull request #57 from mkaring/1.4
+
+Improved TextBox
+
+* Removed minor access problem in the Slick2D renderer
+
+* Improved TextBox
+
+The initialization of the textbox was improved by removing a useless initialization of the text that is displayed.
+Furthermore a bug was removed that caused a text field with error contents to be corrupted once a screen was entered again
+Missing documentation was added
+
+* Merge branch '1.3' into 1.4
+
+Conflicts:
+	nifty-controls/src/main/java/de/lessvoid/nifty/controls/imageselect/ImageSelectControl.java
+	nifty-core/src/main/java/de/lessvoid/nifty/tools/SizeValue.java
+
+* native-lwjgl: close InputStream when reading mouse cursor resources
+
+* examples-project: this change belongs to the last commit
+
+* correctly close Inputstream when reading the jdk14 log configuration
+
+* bring back maven assembly to build executable jar file (example-project)
+
+* mouse events have been returned as processed = false in some wrong cases
+
+It was possible that Nifty returned processed = false for events that
+from a intuitive standpoint should have been processed. Example:
+Clicking on a DropDownControl so that it opens and while it is
+opening releasing the mouse button. This was reported as processed =
+false which would make it possible for your game to handle the event -
+although that would be very odd in that special case.
+
+The problem is that Nifty will block interaction while
+onStartScreen/onEndScreen/interactionBlocked-Flag is active. This is
+expected in most cases but since these elements could not be interacted
+with Nifty return processed = false. This has now been corrected:
+Elements that are generally available for interaction but are not at the
+moment will still be treated as processed = true.
+
+* reactivate elements in resetLayers()
+
+The onEndScreen effect will disable interaction with elements by setting
+a done boolean to true. Unfortunately this flag was never reset when you
+gotoScreen() to the same screen. It was therefore possible for elements
+to be visible but not being able to interact with them. Now done is
+explicitly reset to false in the startScreen() method.
+
+* fix failing tests
+
+* EventConsume example added to controls demonstration
+
+* ignoreMouseEvents and ignoreKeyboardEvents added at element level
+
+The new methods to ignore mouse events and keyboard events at the global
+Nifty level have now been added at the element level as well. You can
+now ignore mouse and keyboard events for individual elements too! Please
+note that this is a bit redundant to the existing visibleToMouseEvents
+but we've kept the same names to be consistent with the method on the
+main Nifty instance.
+
+We see it so: visibleToMouseEvents should be used to generally define
+visibility to mouse events and ignoreMouseEvents / ignoreKeyboardEvents
+to temporarily disable access.
+
+* delay focusHandler element removal in nifty.removeElement() to frame end
+
+element.removeFromFocusHandler() is now called when the Element is
+really removed at the end of the next frame update loop and not directly
+when nifty.removeElement() is called.
+
+* mouseWheel() interact method will now be consumed by the scrollbar
+
+This especially fixes a problem in the ScrollPanelControl where you
+could move the vertical Scrollbar while hovering the horizontal
+Scrollbar. The problem was that originally the mouseWheel() event was
+not consumed by the Scrollbar and was therefore send to the mouseWheel()
+event of the Scrollpanel Control as well.
+
+* CheckBox: Prevent toggle animation when there is no change in state
+
+When you uncheck a CheckBox that is already unchecked or you check a
+CheckBox that is already checked then now there is nothing changed. This
+prevents the somewhat ugly display of a check mark that disappears when
+a CheckBox is initially unchecked and is set explicitly to unchecked by
+code again.
+
+* nifty.gotoScreen() will now remove all previous focusHandler elements
+
+This is necessary to prevent duplicate entries when calling
+nifty.gotoScreen() for the same screen, e.g. you goto a screen, go to
+another screen and then return back to the first screen. Prior to this
+change all focusable elements where added again o_O
+
+* NiftyInputConsumerNotify added (can be enabled on Nifty instance)
+
+This is a debugging / information feature. You can enable an
+NiftyInputConsumerNotify instance on the main Nifty instance and Nifty
+will call you back to inform you about the mouse- and keyboard-events it
+has received AND if the events have been processed by Nifty.
+
+* onInitialClick() will now ALWAYS capture the mouse
+
+This is done to prevent losing mouse events when you click and hold the
+mouse button on some GUI element and then move the mouse away from the
+control. This kind of capturing the mouse already worked well for all
+controls that are focusable. Some controls - like the buttons of
+a Scrollbar control - are not supposed to be focusable individually. For
+these controls the mouse was not captured but it is now.
+
+* Merge pull request #54 from mkaring/1.3
+
+Improved Label-Control builder
+
+* Added method to label to directly enable line wrapping from the builder/xml
+
+* Issue #50 DropDown Improvements Part II fixed
+
+"displayItems" attribute is now supported for the DropDown control too.
+
+* should fixed issue #52 Listbox Focus Problem
+
+The problem was that the Listbox of the DropDown is hidden but it's
+still being updated with all the data, selection and the correct focus
+item. The problem is that without showing the Listbox at least once
+Nifty does not know the layout of the Listbox and the Scrollbar. So
+internally the handle position is kept at 0. This has now being fixed
+with an explicit (internal) update of the position when the Listbox (and
+the scrollbar) is being shown initially.
+
+* add some commented out logger configurations
+
+* fixed DraggableControl not processing mouse events in some cases
+
+It was possible for DraggableControls to return "processed = false"
+for mouse events when it was being dragged very fast or when the mouse
+leaves the screen while it was dragged. This should be fixed now.
+
+Implementation note:
+Nifty already supported exclusive mouse events for elements that are
+focusable. When such an element was initially clicked the element
+internally was marked as the one element that captured the mouse. Nifty
+made sure that all mouse events were only sent to this element.
+
+However it still was possible to have mouse events that didn't hit any
+element at all and therefore were returned as "processed = false". This
+has now been changed. Now all mouse events will be send to the element
+that has captured the mouse no matter if the mouse hovers the element or
+not.
+
+Additionally when a DraggableControl is being dragged it is
+now automatically marked as exclusive.
+
+* logging tweaks
+
+* fixes #49 Improve dropdown - at least the first part of the issue
+
+* Merge pull request #48 from mkaring/1.3
+
+Bugfix in ListBox
+
+* Fixed conflicting ID problem that happened in case two dropdown elements were placed on the same screen.
+
+* Merge pull request #47 from mkaring/1.3
+
+Fixed tab-control bug
+
+* Fixed conflicting ID problem in case multiple tab groups are active at the same time
+
+* #59 fix calling nifty.gotoScreen() with pending closePopup() (sf.net)
+
+nifty.closePopup() will not be executed directly but will be scheduled
+for execution at the end of the next update loop. nifty.gotoScreen()
+however will be executed immediately. Because of this it was possible
+that calling nifty.closePopup() directly followed by a call to
+nifty.gotoScreen() messed up some internals - because the current
+screen already has been removed when the popup is still active
+and in the process of being removed.
+
+Now we will close all popups in nifty.gotoScreen() directly prior of
+actually changing the screen to the new one.
+
+If you use effects when the popup is closed and you need to wait for the
+effects to end you should use nifty.closePopup() with an EndNotify and
+call nifty.gotoScreen() when the EndNotify is called.
+
+* #62 [JME3] Enable/disable consuming of mouse events by Nifty (sf.net)
+
+Use nifty.setIgnoreMouseEvents(true) to completely disable mouse event
+processing in Nifty . The NiftyInputConsumer.processMouseEvent() will
+always return false in that case.
+
+Use nifty.setIgnoreKeyboardEvents(true) to completely disable mouse
+event processing in Nifty. The NiftyInputConsumer.processKeyboardEvent()
+will always return false in that case.
+
+* Merge pull request #46 from mkaring/1.3
+
+Dropdown control improvement
+
+* Added possibility to the dropdown control to set the converter class using the builder or the XML
+
+* closing popups will not reset effects from other layers anymore
+
+* Merge branch '1.4' of github.com:void256/nifty-gui into 1.4
+
+* Merge pull request #45 from toolforger/cleanup
+
+Cleanup
+
+* Suppressed warnings:
+- Deprecation
+- Undocumented empty block
+- Unhandled tokens in @SuppressWarnings
+- Unused imports
+- Unused private members
+
+* Removed unnecessary imports.
+
+* Added @SuppressWarnings("unchecked") to silence an unnecessary warning.
+
+* Replaced somewhat simple equals() method with the Eclipse-provided
+template.
+Added a hashCode() function to go along with equals().
+
+* Removed unnecessary semicolon.
+
+* Added missing @Deprecated.
+
+* Removed unnecessary explicit transferral of 'nifty' member to private
+nested class (these are automatically transferred as needed).
+This was done to silence a "local member hides member of same name in
+outer scope" warning.
+
+* Added @SuppressWarnings("rawtypes") to silence warnings.
+(Fixing the missing generic arguments would be preferrable in the long
+run.)
+
+* Removed redundant superinterface NiftyControl (alread covered by Menu).
+
+* Removed unnecessary @SuppressWarnings("unchecked").
+
+* Removed unnecessary casts.
+
+* Added missing @Override annotations.
+
+* Merge pull request #44 from mkaring/1.3
+
+reduced of event spamming for idle mousewheel events
+
+* Merge branch '1.3' of https://github.com/void256/nifty-gui.git into 1.3
+
+* Disabled calling of the onMouseWheel function in case the delta of the wheel is 0
+
+* #56 TextRender does not wrap new strings 
+
+Changing the text with word wrapping enabled needs to trigger a relayout
+of the actual text element. Unfortunately the Element the TextRenderer
+is attached to is not available in the TextRenderer class. However
+changes to the text can actually trigger changes to the size of the
+text element. So there is a relayout necessary.
+
+To free users of calling element.layoutElements() by themself this is
+now performed in the setText() method. To do this the element the
+TextRenderer is attached to is stored in the TextRenderer when the
+element has been layouted at least once.
+* Merge pull request #40 from toolforger/dsl
+
+Another one-liner
+
+* Removed redundant superinterface NiftyControl from MenuControl to
+silence a warning.
+
+* Merge branch '1.3' of git://github.com/void256/nifty-gui into dsl
+
+* Another "missing type parameter" warning eliminated for good.
+
+* Merge pull request #39 from toolforger/dsl
+
+Two clean-up commits
+
+* Added hashCode implementation to go along with equals().
+Substituted equals() implementation with the ironclad Eclipse-generated
+one.
+
+* Some cleanup to silence warning noise.
+
+* #3559302: ImageSelect could use removeImage, count()
+
+added to new methods to the ImageSelect control
+
+* #3559299: In ImageSelect the field "element" is redefined
+
+"element" from AbstractController should be used and initialized in
+bind(). This was probably missing when AbstractController was
+introduced.
+
+* #3559297: ImageSelect does not updateVisuals after setSelectedImageInd
+
+added missing updateVisuals() calls in setSelectedImageIndex() 
+
+* #3559297: ImageSelect does not updateVisuals after setSelectedImageInd
+
+added missing updateVisuals() calls in setSelectedImageIndex() 
+
+* fix WindowClosedEvent
+
+* Merge branch '1.4' of github.com:void256/nifty-gui into 1.4
+
+* fix issue #38 Change the NiftyInputEvent enum into an Interface
+
+Finally! NiftyInputEvent is now an interface (without any methods). You
+are now free to implement this interface in your own enum. The existing
+enum has been refactored into NiftyStandardInputEvent.
+
+When creating your own Control you can now define your very own specific
+NiftyInputEvent for your Control.
+
+* fix issue #11 Change the NiftyInputEvent enum into an Interface
+
+Finally! NiftyInputEvent is now an interface (without any methods). You
+are now free to implement this interface in your own enum. The existing
+enum has been refactored into NiftyStandardInputEvent.
+
+When creating your own Control you can now define your very own specific
+NiftyInputEvent for your Control.
+
+* Merge branch '1.3' into 1.4
+
+Conflicts:
+	nifty-examples/pom.xml
+
+* fixed some issue with the console textfield not receiving mouse clicks
+
+* The problem is the way Nifty propagates some effects to child elements.
+
+When an effect starts for an element the effect will automatically
+forwarded to all child elements. So for an onClick on a panel with child
+elements this means that the onClick effect will be started for the
+child elements as well. So this might sometimes be used to trigger
+effects for child elements when the parent has been clicked.
+
+Since I've not found any control where this feature has actually been
+used I've now changed this behaviour. Now onClick will not travel to
+child elements anymore. This solves this issue. There is a slight
+possibility that this change will break some existing code. So I was for
+a long time unsure to change this.
+
+What convinced be to change this in the end were two things:
+
+1. the issue described in here really sucks bad when it occurs :)
+2. the same policy to not forward effect activation is already used
+successfully for onHover, onStartHover, onEndHover, onEnabled,
+onDisabled
+
+* resourceBundle support for nifty-controls fixed
+
+* Merge branch '1.3' of github.com:void256/nifty-gui into 1.3
+
+* add resourceBundle support to nifty-controls xml files
+
+* fix issue #37 and refresh all screens on nifty.resolutionChanged() call
+
+* At the time the controlDefinition is parsed the SpecialValueReplace
+process is applied like it is for all other elements. However The
+controlDefinition is different because at the time it is parsed there
+is not yet an active ScreenController. So any calls that refer to
+the ScreenController cannot be executed.
+
+This fix will now execute the SpecialValueReplace process a second
+time when the controlDefinition is applied with an actual control.
+At this time Nifty knows about the current ScreenController and can
+call the method successful.
+
+The testcase of the bug report works now correctly with this fix.
+
+* Merge pull request #36 from mkaring/1.3
+
+Slick-Renderer Updates
+
+* Bugfix: added missing null check in drop down popup
+
+* Implemented support for the default implementation for the StateBasedGames. Warning message included.
+
+* Implemented support for a shared instance of the Nifty-GUI over multiple game states
+
+* Bugfix: Dragging operations that started outside of the game screen cause a ArrayIndexOutOfBounds exception
+
+* textfield control bugfix: insert characters with copy/paste was broken
+
+* Lwjgl-Renderer: added primitive (panels..) and font glyph render counter
+
+* replaced screen.layoutLayers() with getParent().layoutElements()
+
+UpdateCursor called screen.layoutLayers() when the position of the
+cursor needs to be changed. This looks a bit silly (trigger a complete
+relayout of the whole screen?) because it performs too much work. On the
+other hand it didn't work correctly in all cases when textfields have
+been used in popups, for example in the controls demo it's possible to
+display a console window as a popup while pressing F1 at any time. The
+very first time the console popup was displayed the cursor was rendered
+in the upper left corner of the screen. This was because
+screen.layoutLayers() does not take the popups into account!
+
+This commit fixed this issue. There still is a bit uncertainty around
+this change since the original code was probably there for a reason :)
+But so far I didn't notice any problems with it.
+
+* Optimize some data structures for a bit more performance
+
+* Merge pull request #35 from odyssomay/1.3
+
+Console border cut off
+
+* Move border from "nifty-console-listbox#scrollpanel" to "nifty-console-textfield#panel".
+
+* Merge pull request #34 from odyssomay/1.3
+
+Only display console cursor when the textfield has focus.
+
+* Only display console cursor when the textfield has focus.
+
+* optimize imports
+
+* EffectProcessor has been renamed
+
+* call checkGLError() and getViewport() only once per frame
+
+* log stuff only if logging is enabled
+
+* initialize "elements" ArrayList with a default capacity of 0
+
+.. since some elements will never have any child elements at all
+
+* remove unnecessary ArrayList instance
+
+* static logger
+
+* optimize usage of LayoutManager instances
+
+* lazy create the debugColor (only when someone needs it)
+
+* removed unused file
+
+* prefer StringBuilder and HashMap and make some instance variables final
+
+* lazy initialize "EffectPropertiesValues" instance (only when needed)
+
+* added "nifty-version" property to examples pom.xml
+
+easily switch versions
+
+* lazy initialize EffectProcessors to reduce memory footprint of creation
+
+* make all loggers static and access ImageModeHelper static as well
+
+* fix the tutorial.xml background gradient with the new changeColor effect
+
+* introducing a new effect: "changeColor" changes the current color :)
+
+* minor GC optimization in Color class
+
+* ColorValueParser moved to core and optimized for better GC performance
+
+* cache renderOrder in array to generate less garbage when rendering
+
+* #3520602: Optimising EffectManager
+
+moved the neverStopRendering boolean to the EffectEventId to reduce
+duplicated code in the EffectManager
+
+* setFocus() to RadioButton when being activated
+
+this was a feature that somehow has been lost and should now work again
+
+* #3520602: Optimising EffectManager
+
+changed effectProcessor to EnumMap as suggested by timboura
+
+* #3489461: Hint effect requires interact tag
+
+Automatically enable visibleToMouse for elements that have a hover
+effect attached to. this is similar to what we do for the <interact
+onClick="" /> way to register mouse click handlers. If you attach
+<interact onClick="" /> to an element we automatically enable
+visibleToMouse for the element too. I think it makes sense to do the
+same for the hover effect (since it doesn't make much sense to add hover
+effects to an element and don't enable visibleToMouse for the element)
+
+* #3473808: WindowClosed event - new feature added
+
+WindowClosedEvent added that is published on the event bus when a
+WindowControl has been closed. Drag and Drop example has been extended
+as well.
+
+* fixed an error that kept some elements on screen after removing them
+
+this bug was introduced with the new render order feature
+
+* Merge branch '1.3'
+
+* removed output of version to System.out() you can use getVersion() now
+
+* patch from zarch: manage ScreenControllers in Map instead of Collection
+
+Additionally this changes Hashtable to HashMap
+
+* #3529920: Add new ImageMode to render like subImage without scaling
+
+Additional change: Added support to NiftyImage and ImageMode classes to
+actually allow changing the ImageMode dynamically.
+
+Example use:
+
+-----
+// get element
+Element element = nifty.getCurrentScreen().findElementByName("logo");
+
+// get NiftyImage of element
+NiftyImage image = element.getRenderer(ImageRenderer.class).getImage();
+
+// change the parameters of the imageMode
+image.getImageMode().setParameters("subImageDirect:100,100,50,50");
+-----
+
+Please note that you can change the imageMode to a complete different
+mode using this mechanism. Or you can keep the imageMode and just
+change it's parameters.
+
+* #3529920: Add new ImageMode to render like subImage without scaling
+
+Added "subImageDirect" as a new imageMode that works exactly like
+subImage but doesn't render the subImage part scaled to the whole image
+but in it's original size and position.
+
+* Merge pull request #32 from mkaring/1.3
+
+Implemented proper shutdown of effects after there lifetime.
+
+* Merge pull request #31 from toolforger/cleanup-stepwise
+
+Added type parameters where I could infer them.
+
+* Added type parameters where I could infer them.
+This also eliminated some type casts.
+
+Signed-off-by: Joachim Durchholz <toolforger@durchholz.org>
+
+* Implemented proper shutdown of effects after there lifetime.
+
+* Merge pull request #30 from toolforger/cleanup-stepwise
+
+Made NiftyEvent nongeneric.
+
+* Made NiftyEvent non-generic.
+
+See https://github.com/void256/nifty-gui/issues/29
+
+Signed-off-by: Joachim Durchholz <toolforger@durchholz.org>
+
+* added bin/ to .gitignore
+
+* Merge branch '1.3'
+
+Conflicts:
+	nifty-examples/src/main/java/de/lessvoid/nifty/examples/defaultcontrols/treebox/TreeboxControlDialogController.java
+
+* Merge pull request #28 from toolforger/cleanup-stepwise
+
+Imports cleanup
+
+* Removed unused member imports (static imports).
+
+Signed-off-by: Joachim Durchholz <toolforger@durchholz.org>
+
+* Replaced a static import * with individual imports.
+This is standard with other Nifty code, and eliminates a duplicate import.
+
+* Removed unused class imports.
+(Static imports have remained untouched.)
+
+This eliminated ca. 60 distracting warnings.
+
+Signed-off-by: Joachim Durchholz <toolforger@durchholz.org>
+
+* HTML: translating of HTML-entities like &lt; added
+
+* fix nifty-lwjgl-renderer dependency version and added natives plugin
+
+natives plugin is: maven-nativedependencies-plugin to support
+automatically unpacking of lwjgl jars using the accompanying eclipse
+plugin. this is already used by the nifty-examples and was added in here
+now as well.
+
+* TabControl: use the new renderOrder feature for active tab
+
+* removed debug call the screen.debugOutput()
+
+* actually compare renderOrder values like described in last comment :)
+
+* new feature: element attribute "renderOrder" to modify the render order
+
+Elements will be rendered ascending by the renderOrder value which must
+be an int value. The default value for "renderOrder" is 0 which means
+that the original render order of the elements will be used. The render
+order is relevant for the child elements of the same parent.
+
+Internally the index in the elements list is used as the
+default renderOrder value when you don't set a value. So when you have a
+panel with 3 child elements and you don't set a specific renderOrder
+value then internally they will automatically get the values 0, 1 and 2.
+Rendering occurs in this order then.
+
+You can change the renderOrder value to some high value, like 10000 to
+enforce this element to be rendered above all of the other elements or
+some very small number like -10000 to render it below all others. You
+can even take control of the render order for all elements if you
+provide a renderOrder value for all child elements.
+
+Please note: When you use the same renderOrder for two elements then the
+id will be used for comparison. If the elements don't have ids or the
+same id then object.toString() is being compared (the reference in
+memory).
+
+* before applying a style the effect of that style is removed now
+
+this fixes a problem when cloning an ElementType where it was possible
+that the same style was applied twice
+
+* #3522365: Javadoc addition (with patch)
+
+added a JavaDoc to findNiftyControl() method that explains how this
+method works especially that the method returns NullObjects when no
+control can't be found
+
+* version-feature: make sure to create the correct directory in ant task
+
+* test example changed to demonstrate the auto calc mode for parents
+
+* fixed auto-resize-if-all-childs-have-fixed-px-size mode
+
+When all child elements of a parent element have a fixed width or height
+value and the parent does not have any width or height constraints set
+then Nifty will automatically resize the parent to the sum or the max
+width or height value of all child elements. The specifiy Layoutmanager
+(vertical, horizontal or center) decides if sum or max is used when
+calculating the parent size.
+
+Additionally another problem has been fixed:
+when the auto-resize-if-all-childs-have-fixed-px-size mode has
+calculated a new constraint for the parent and later the child elements
+change in a way that doesn't allow Nifty to calculate a constraint (like
+one child is removed or added or a constraint is changed from px to
+percent) then the calculated width/height constraint for the parent will
+be removed.
+
+* equals() method added to SizeValue and changed test to junit4 syntax
+
+* fix failing test
+
+* #3521444: Add method to Nifty to request the build version
+
+Added new public String getVersion() method to the main Nifty class that
+returns the version of Nifty and the time of the build.
+
+* added some margin magic to the tabs control (work in progress)
+
+* introduction of first naive margin implementation
+
+* #3473823: SetWidth methods not so friendly
+
+added static factory methods to create px and percent more easily
+and readable:
+
+public static SizeValue px(final int pixelValue);
+public static SizeValue percent(final int percentage);
+public static SizeValue wildcard();
+* experimental change for mouse event handling
+
+The old way of handling mouse events had some problems especially with
+EventBus events.
+
+Here is a (long) explanation:
+
+When you use the <interact /> callback methods like <interact
+onClick="..." /> everything is fine. Mouse events will travel down all
+elements that are visibleToMouse="true" until some element has been
+found with an <interact /> kind event handler set. When the event
+handler is found this mouse event is consumed and is not send to any
+other elements "below" the element. All is fine.
+
+However there is a problem with this approach especially with EventBus
+events. EventBus events are published and because of their very nature
+are not able to provide any information if the event has been consumed
+by anybody or not at all. This is a problem when you imagine overlayed
+elements, like a button on a panel and you have a <interact
+onClick="..." /> on the panel but you're using the Eventbus
+ButtonClickedEvent for the button.
+
+So when Nifty processes the mouse click event it will be first sent
+to the Button (because it is "above" the panel) which publishes it to
+the EventBus event AND then the event will be forwarded to the panel
+below as well. The panel has the <interact onClick="..." /> event
+handler set which is executed and event handling stops at the panel
+level.
+
+The problem is that we've now executed two event handlers (for the
+button and the panel) even though we'd probably expect only the top most
+element to be called.
+
+This behaviour has now been changed like so:
+
+To keep things simple Nifty will now stop processing directly when it
+encounters the first visibleToMouse="true" element. This means events
+will now don't travel any further. When you have two elements above each
+other that both have visibleToMouse="true" then only the topmost element
+will now get the event.
+
+Please Note:
+
+To make this work some of the default controls need to be changed
+slightly. It might be necessary to change your code slightly as well!
+Especially you must now be careful where you add visibleToMouse="true"
+because this can now really block events from travelling down the
+element tree.
+
+We're not sure if this will solve all problems but it it at least a
+straightforward simple solution. There is no second guessing anymore
+where events hit elements and so on. We're not too happy with this but
+we'll need to check this in practice (therefore the commit).
+
+* addElementAfter() added to the FocusHandler
+
+* improved exception Logging and Element move focushandler fix
+
+- improved logging of exceptions especially of exception stacktrace
+- when elements are being moved from one parent to another the elements
+are removed from the focushandler of the old parent and are now again
+added to the focushandler of the new parent
+
+* screen.debugOutputFocusElements() added to output focus information
+
+This is helpful to get a debug string of all elements that are currently
+focusable.
+
+* #3520041: Window DragNDrop multiplies events
+
+In general when a popup is being shown (nifty.showPopup()) all of the
+controls it contains are initialized (and in case of the button
+control are registered with the EventBus). When the popup is closed
+all controls are automatically removed from the EventBus. So popups work
+in the general case correctly.
+
+But when a drag operation starts the content of the draggable was being
+moved to a newly created popup (with a call to markForMove()) and after
+that the popup was displayed (using nifty.showPopup()). So in that case
+all the controls - the content of the draggable that have been
+initialized already - would be registered AGAIN when the content moves
+to the popup! And because when the drag operation ends the content is
+moved back and then the popup is closed - and since the content is
+already gone the popup when being closed doesnt contained any elements
+anymore. So the removal from the EventBus in the button case didn't work
+at all too :)
+
+So after the long explanation the fix actual was easy: when the drag
+operation starts we will now show the popup first and THEN move the
+content to the popup! This way no duplicate registering with the
+EventBus is happening and everything should work as expected again!
+
+PS: Another bug has been fixed as well: when the drag operation ends
+Nifty looks for droppables at the current position. While doing this
+Nifty didn't check if the droppables are visible! So it was possible
+that you have some hidden droppable and when you incidentally drop
+something at that position it would be possible to drop a draggable to a
+hidden droppable - with the effect of your droppably disappearing! Crap!
+But thats fixed now! :)
+
+* Merge pull request #26 from mkaring/1.3
+
+Added missing event publishing to the tab control.
+
+* Added missing event publishing to the tab control.
+
+* Merge pull request #25 from mkaring/1.3
+
+Optimized graphics for the nifty-tab. Removed old images of the tabs
+
+* Optimized graphics for the nifty-tab. Removed old images of the tabs
+
+* Merge pull request #24 from mkaring/1.3
+
+Updated style of tabs to make them look Nifty!
+
+* Updated style of tabs to make them look Nifty!
+
+* minor changes to the tab images
+
+* Merge pull request #23 from mkaring/1.3
+
+Tabs
+* Fixed some minor issues with the tab control.
+Fixed one of the tab examples that was messing up things.
+
+* Fixed some style issues with the the tabs control
+
+* Merge branch '1.3' of git://github.com/void256/nifty-gui into 1.3
+
+* Slick-Controls: Update of the tab control. Functional parts appear working.
+
+* Merge pull request #22 from mkaring/1.3
+
+Textfield - Reworked Version
+
+* Updated version of the new text field according the void's wishes.
+
+* work in progress new tabs images added
+
+* correctly log exception stacktrace
+
+* Merge pull request #21 from telamon/event_issue1
+
+Event issue1 - 
+
+* #3515641: ConsoleCommands.findCommand(String)
+
+findCommand() method added, see
+https://sourceforge.net/tracker/?func=detail&atid=1059825&aid=3515641&group_id=223898
+for details.
+
+* Merge branch '1.3' of git://github.com/void256/nifty-gui into 1.3
+
+* Extended example of the text field to cover more of the possibilities.
+
+* Some bugfixes and cleanup of the TextField to fit the tests.
+
+* Exposed method canHandleMouseEvents() as public
+
+* First version of the improved text field. Along with a example that allows testing the new features.
+
+* Widened the arguments from the FontHelper from String to CharSequence to allow using of alternative CharSequence
+implementations.
+
+* #3514888: The playSound effect uses music volume
+
+Adding "playMusic" effect to use the correct volume control for
+"playMusic" and "playSound". Also changed the order of applying volume
+before playing a sound or music but not sure if this works correctly.
+
+* Merge branch 'master' of github.com:void256/nifty-gui
+
+* fixed version for nifty-examples-slick2d/pom.xml
+
+* Merge remote-tracking branch 'origin/1.3'
+
+* update .gitignore for nifty-examples-slick2d
+
+* make better logging.properties
+
+* Merge branch '1.3' of github.com:void256/nifty-gui into 1.3
+
+* LwjglRenderImage bugfix: actually free resources in dispose()
+
+* changed java.util.logging confguration to logging.properties
+
+* bugfix: starting an effect now makes sure that the old effect stops
+
+* #3513962: Effects with neverStopRendering="true" called deactive()
+
+when effect.deactivate() is called from the regular update() the
+deactivate() is not called anymore. if it is called from any other
+situation deactivate() is not called.
+
+* #3489432: Better Loggernames (Additional Fix)
+
+When using java.util.logging (jdk14 logging) the name in the log is the
+calling class that logs (and not the loggername!). Nifty used two
+special logger names for eventbus and inputevent logging. This was
+confusing since you could see entries of a class (like
+de.lessvoid.nifty.Nifty) in the log when you had actually disabled the
+logger for "de.lessvoid.nifty" :> (but since the two special loggers
+where still enabled they kept happily logging away).
+
+Now each class simply logs with its class logger to clear up the
+confusion! :)
+
+* Merge pull request #20 from mkaring/1.3
+
+Examples and Bugfixes for Slick2D
+
+* Slick2D-renderer: Fixed loading of cursors. Corrected hotspot location
+
+* Update of the Nifty examples and implementation of Slick 2D renderers for all examples
+
+* Slick2D-Renderer: Allowed overwrite of a function of the basic game that was required to get applications properly
+initialized
+
+* Slick2D-Renderer: Changed applied blending mode to fit the settings of the LWJGL renderer
+
+* Slick2D-Renderer: Nifty requires null returned in case a sound or a music fails at loading
+
+* Merge branch '1.3' of git://github.com/void256/nifty-gui into 1.3
+
+* adding .gitignore
+
+* Implemented a small ugly parsing of the angelcode definition because Slick is unable to do this itself. A update is badly needed here.
+
+* add missing files
+
+* bring back the nifty-examples-slick2d project as a submodule\n\nTHIS WON'T COMPILE CORRECTLY NOW (until mkaring fixes them for the new slick2d renderer :-)
+
+* For some strange reasons Slick throws a NullPointerException in case loading image fails. Catching this.
+
+* Merge branch '1.3' of git://github.com/void256/nifty-gui into 1.3
+
+* Merge pull request #19 from telamon/hover-patch
+
+Fixed bug: mouse events without 'button1down' were not proccessed at all
+
+* Fixed bug: mouse events without 'button1down' were not proccessed at all
+
+* Merge pull request #16 from telamon/descendants
+
+Feature: Element.getDescendants()
+
+* Element.java: Added feature to traverse all descendants
+
+* Merge pull request #15 from telamon/reshape_patch
+
+JoglRenderDevice reshape patch
+
+* Merge pull request #15 from telamon/reshape_patch
+
+JoglRenderDevice reshape patch
+
+* Merge remote-tracking branch 'origin/master' into reshape_patch
+
+* JoglRenderDevice.java: Removed viewport width/height caching; Added missing Override annotations
+
+* Merge remote-tracking branch 'origin/1.3'
+
+* added nifty-renderer-jogl2/bin to .gitignore
+
+don't know why eclipse created it on the first place tho since the
+m2eclipse plugin should use target instead o_O
+
+* #3479685: Nifty xsd validation fail on valid xml files (1.3 xsd)
+
+applied a patch from tumaini that improves the XSD
+
+* added nifty-renderer-jogl2/bin to .gitignore
+
+don't know why eclipse created it on the first place tho since the
+m2eclipse plugin should use target instead o_O
+
+* #3479685: Nifty xsd validation fail on valid xml files (1.3 xsd)
+
+applied a patch from tumaini that improves the XSD
+
+* update version of nifty-renderer-jogl2/pom.xml to 1.4.0-SNAPSHOT
+
+* Merge branch '1.3'
+
+* Merge branch '1.3' of github.com:void256/nifty-gui into 1.3
+
+* adding missing .gitignore
+
+* bring back the jogl2 renderer as a submodule
+
+* Merge branch '1.3' of git://github.com/void256/nifty-gui into 1.3
+
+* Nifty-Examples: First version of a example for the message box (not working)
+
+* Nifty-Default-Controls: Fixed typo
+
+* Merge pull request #12 from mkaring/1.3
+
+slick-renderer not loading .fnt - ID: 3493644 - Bug fix
+
+* #3489432: Better Loggernames
+
+We now make sure there are now top level logger names. All loggers are
+now using the Nifty package.
+
+* #3502523: Cannot remove screen controllers
+
+Applied a patch by Tim B (timboura) that allows removal of
+registered ScreenControllers. Be careful do not remove a
+ScreenController that is still in use when calling 
+unregisterScreenController() :) This is not checked at the moment!
+
+* Slick2D-Renderer: Fixed switched parameters at angelcode font loading. Bug report: 3493644
+
+* Merge branch '1.3' of github.com:void256/nifty-gui into 1.3
+
+* #3497744: Draggable freezes if dragged outside scroll panel
+
+This was a problem related to the childClip property of an element. Any
+element that is a child of an element with childClip set to true (so
+that this element is being clipped to it's parents area) will take the
+parent area into account when being checked for mouse events. So that
+mouse events that are inside of the element but outside of the parent
+clipping region will not be reported as "hits" for the element.
+
+This is the correct behaviour. Unfortunatly the parentClipArea was not
+reset when a drag operation started. So we end up with a draggable that
+can be dragged but when being dropped will keep the parentClipArea of
+it's original parent :) The result is that mouse events (as the mouse
+button release event in case of the dragStop() operation) will never be
+reported to the draggable - because the events occur outside of the
+parentClipArea =D
+
+This is now fixed: If elements change its parent element using
+setParent() or with nifty.moveElement() the parentClipArea attribute of
+the new parent are used for the element. So when you drag an element
+from within an element with parentClipArea enabled the parentClipArea of
+the dragged element will be disabled (because the new temporary parent
+of the element, the popup, does not have parentClipArea set). This way
+the dragStop() event is being called correctly and this problem is
+fixed.
+
+On the other hand if you drop the draggable on a droppable with
+childClip set the parentClipArea of the new parent will be used for the
+draggable as well. So this is actually two fixes in one ;)
+
+* Merge pull request #11 from mkaring/1.3
+
+Slick-Renderer Updates
+
+* Slick2D-Renderer: Implemented methods to control the rendering and update order of the Nifty-GUI and the game.
+
+* Slick2D-Renderer: Allow to change the default size of the UnicodeFontLoader and the TrueTypeFontLoader.
+
+* Merge branch '1.3' of git://github.com/void256/nifty-gui.git into 1.3
+
+* Merge branch '1.3' of https://github.com/mkaring/nifty-gui.git into 1.3
+
+* Slick2D-Renderer: Fixed some bugs that occurred in case the inline color changing was used
+
+* Slick2D-Renderer: Implementing additional functions to request exclusive access on input events
+
+* #3483275: Wrapping spaces inconsistency [fix included]
+
+Applied a patch from tumaini to improve the TextBreak class
+* General code refactoring
+- Removed obsolete parts of the code
+- Improved documentation, removed useless documentation
+- Reformatted code
+- Removed a few potential bugs
+- Fixed method visibilities
+- Fixed names of variables to avoid shadowing
+- Added a few annotations and comments to control the inspection of IntelliJ
+- Removed unnecessary control flow statements
+- Removed magic numbers
+- Added initial size to lists
+- Widend use of classes where possible
+- Narrowed local variables
+
+* Slick2D-Renderer: Added missing comments, removed some useless ; and made parts of the code easier.
+
+* #3474253: Blur.Multiply effect in scrollpanel default style
+
+wrong backgroundColor for the background of the scrollpanel made the
+scroll content to be displayed a bit dark
+* Merge branch '1.3' of ssh://nifty-gui.git.sourceforge.net/gitroot/nifty-gui/nifty into 1.3
+
+* #3466470: fromXml method swallows exceptions, preventing shutdown
+
+throws RuntimeException now instead of only calling e.printStacktrace()
+* Fixed the static import bug.
+Also did some work to highlight the selected tab button.
+For some reason this doesn't work right though.
+
+* Fix Drag and Drop when Droppable is behind an invisible element
+
+When a Draggable is being dropped all elements below the Draggable are
+checked for being Droppables. This process didn't work correctly when an
+invisible element was above the Droppable.
+* fix version to 1.4.0-SNAPSHOT after merge with 1.3 branch
+
+* Merge pull request #10 from mkaring/1.3
+
+ColorValidator - Bugfix
+
+* Cleaned the code for the color validator test
+
+* Fixed error in color validator and in the assigned test
+
+* Fixed mistake in OnClickType validation pattern
+
+* Improved usage of regular expressions for the OnClickType validation
+
+* Fixing Bug of the color validator and improved its performance
+- isValid function only worked in case the color text fitted the short or the long mode, not in case the without alpha variants were used
+- Improved usage of the regular expressions to detect valid strings
+- Changed separation of the different color modes to use the length of the string instead of individual patterns
+
+* Revert "update version to 1.4.0-SNAPSHOT"
+
+This reverts commit 515757d65090152df179df271e0fd666fee00e8c.
+
+* Merge branch '1.3' of ssh://nifty-gui.git.sourceforge.net/gitroot/nifty-gui/nifty into 1.3
+
+* Slick-Renderer: Implemented support for color changes inside a text
+
+* Merge pull request #9 from mkaring/1.3
+
+Slick-Renderer: Implemented support for color changes inside a text
+* Slick-Renderer: Implemented support for color changes inside a text
+
+* update version to 1.4.0-SNAPSHOT
+

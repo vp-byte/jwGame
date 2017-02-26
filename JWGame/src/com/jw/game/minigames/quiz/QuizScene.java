@@ -15,6 +15,8 @@ import com.jw.game.minigames.quiz.data.Quiz;
 import com.jw.game.minigames.quiz.data.QuizService;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.Button;
+import de.lessvoid.nifty.controls.Label;
+import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
@@ -118,12 +120,12 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         setButtonText("buttonD", quiz.getAnswer_d());
     }
 
-    private void setQuizText(String text) {
-        Element textField = screen.findElementById("quizText");
-        if (textField == null) {
-            throw new IllegalStateException("TextField with id=quizText not found");
+    private void setQuizText(String text) {        
+        Element quizText = screen.findElementById("quizText");
+        if (quizText == null) {
+            throw new IllegalStateException("QuizText with id=quizText not found");
         }
-        TextRenderer textRenderer = textField.getRenderer(TextRenderer.class);
+        TextRenderer textRenderer = quizText.getRenderer(TextRenderer.class);
         if (textRenderer == null) {
             throw new IllegalStateException("TextRenderer from quizText not found");
         }
