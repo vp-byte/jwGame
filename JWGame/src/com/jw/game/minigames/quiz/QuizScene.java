@@ -59,6 +59,14 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         this.app.getCamera().setLocation(new Vector3f(0f, 1.2f, -2.85f));
     }
 
+    @Override
+    public void update(float tpf) {
+        super.update(tpf);
+        if (!this.app.getCamera().getLocation().equals(new Vector3f(0f, 1.2f, -2.85f))) {
+            this.app.getCamera().setLocation(new Vector3f(0f, 1.2f, -2.85f));
+        }
+    }
+
     private void addScene() {
         scene = assetManager.loadModel(QuizData.quizSceneAsset());
         scene.setName(MainData.mainSceneSpartial());
@@ -120,7 +128,7 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         setButtonText("buttonD", quiz.getAnswer_d());
     }
 
-    private void setQuizText(String text) {        
+    private void setQuizText(String text) {
         Element quizText = screen.findElementById("quizText");
         if (quizText == null) {
             throw new IllegalStateException("QuizText with id=quizText not found");
