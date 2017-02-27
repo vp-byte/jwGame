@@ -7,6 +7,8 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.InputManager;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -15,8 +17,6 @@ import com.jw.game.minigames.quiz.data.Quiz;
 import com.jw.game.minigames.quiz.data.QuizService;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.Button;
-import de.lessvoid.nifty.controls.Label;
-import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
@@ -31,10 +31,14 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     private InputManager inputManager;
     private Node rootNode;
     private Spatial scene;
+    private Spatial protagonist;
+    private QuizAnimationControl animationControlBoy;
     private final Nifty nifty;
     private Screen screen;
     private final QuizService quizService;
     private List<Quiz> quizlist = null;
+    private final Vector3f camLocation = new Vector3f(0f, 1.2f, -2.85f);
+    private final Vector3f camDirection = new Vector3f(0.0f, 0.0f, 1.0f);
 
     public QuizScene(Nifty nifty) {
         this.nifty = nifty;
@@ -50,20 +54,23 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         this.inputManager = this.app.getInputManager();
         this.rootNode = this.app.getRootNode();
 
+        addBoy();
+
         addScene();
         nifty.fromXml("Interface/quiz/quiz.xml", "quizScreen", this);
         this.app.getFlyByCamera().setEnabled(false);
         inputManager.setCursorVisible(true);
         setQuiz(nextQuiz());
-
-        this.app.getCamera().setLocation(new Vector3f(0f, 1.2f, -2.85f));
     }
 
     @Override
     public void update(float tpf) {
         super.update(tpf);
-        if (!this.app.getCamera().getLocation().equals(new Vector3f(0f, 1.2f, -2.85f))) {
-            this.app.getCamera().setLocation(new Vector3f(0f, 1.2f, -2.85f));
+        if (!this.app.getCamera().getLocation().equals(camLocation)) {
+            this.app.getCamera().setLocation(camLocation);
+        }
+        if (!this.app.getCamera().getDirection().equals(camDirection)) {
+            this.app.getCamera().lookAtDirection(camDirection, Vector3f.UNIT_Y);
         }
     }
 
@@ -71,6 +78,18 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         scene = assetManager.loadModel(QuizData.quizSceneAsset());
         scene.setName(MainData.mainSceneSpartial());
         this.rootNode.attachChild(scene);
+    }
+
+    public void addBoy() {
+        protagonist = assetManager.loadModel(MainData.mainProtagonistAsset());
+        protagonist.setName(MainData.nameProtagonistSpartial());
+        rootNode.attachChild(protagonist);
+
+        animationControlBoy = new QuizAnimationControl("boy");
+        protagonist.addControl(animationControlBoy);
+
+        protagonist.rotate(0.0f, 200 * FastMath.DEG_TO_RAD, 0.0f);
+        protagonist.setLocalTranslation(1.7f, 0f, 1.2f);
     }
 
     @Override
@@ -101,7 +120,9 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         Quiz quiz = quizlist.get(0);
         if (answer.equalsIgnoreCase(quiz.getRight().name())) {
             // TODO play congratulation cinematics
+            animationControlBoy.right();                    
             System.err.println("play congratulation cinematics");
+            // ***********************************
             if (quizlist.size() >= 1) {
                 removeQuizFromList(quizlist.get(0));
                 setQuiz(nextQuiz());
@@ -111,7 +132,9 @@ public class QuizScene extends AbstractAppState implements ScreenController {
             }
         } else {
             // TODO play wrong answer cinematics
-            System.err.println("play wrong answer cinematics");
+            animationControlBoy.wrong();
+            System.err.println("play wrong cinematics");
+            // *********************************
         }
     }
 

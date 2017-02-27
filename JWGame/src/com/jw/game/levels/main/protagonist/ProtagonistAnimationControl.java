@@ -8,6 +8,7 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
+import com.jw.game.levels.main.MainData;
 
 public class ProtagonistAnimationControl extends AbstractControl {
 
@@ -16,11 +17,12 @@ public class ProtagonistAnimationControl extends AbstractControl {
     private AnimChannel channel;
     private String animationName;
 
+    @Override
     public void setSpatial(Spatial spatial) {
         if (spatial != null) {
             this.spatial = spatial;
             this.protagonistControl = ((Node) this.spatial).getControl(ProtagonistControl.class);
-            control = ((Node) this.spatial).getChild("boy").getControl(AnimControl.class);
+            control = ((Node) this.spatial).getChild(MainData.protagonist).getControl(AnimControl.class);
             channel = control.createChannel();
         }
     }

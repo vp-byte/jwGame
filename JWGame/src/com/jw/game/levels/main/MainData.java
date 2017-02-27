@@ -49,6 +49,7 @@ public class MainData {
     public static String nameCameraNode() {
         return "cameraNode";
     }
+    
     public static String protagonist = "boy";
 
     public static String mainProtagonistAsset() {

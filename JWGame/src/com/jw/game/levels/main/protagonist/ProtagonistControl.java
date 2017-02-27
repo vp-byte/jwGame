@@ -1,7 +1,6 @@
 package com.jw.game.levels.main.protagonist;
 
 import com.jme3.bullet.control.BetterCharacterControl;
-import com.jme3.math.Vector3f;
 
 public class ProtagonistControl extends BetterCharacterControl {
 
@@ -16,8 +15,6 @@ public class ProtagonistControl extends BetterCharacterControl {
 
     public ProtagonistControl(float radius, float height, float mass) {
         super(radius, height, mass);
-        setDuckedFactor(0.65f);
-        setJumpForce(new Vector3f(0, mass * 6, 0));
     }
 
     public boolean isLeftStrafe() {

@@ -93,6 +93,8 @@ public class MainScene extends AbstractAppState {
         rootNode.attachChild(protagonistNode);
 
         protagonistControl = new ProtagonistControl(0.25f, 2.0f, 45f);
+        protagonistControl.setDuckedFactor(0.65f);
+        protagonistControl.setJumpForce(new Vector3f(0, 45f * 6, 0));
         protagonistNode.addControl(protagonistControl);
         getPhysicsSpace().add(protagonistControl);
 
