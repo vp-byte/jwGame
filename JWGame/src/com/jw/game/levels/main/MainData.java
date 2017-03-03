@@ -7,11 +7,11 @@ public class MainData {
     }
 
     public static String mainSceneSpartial() {
-        return "mainscene";
+        return "mainsceneSpartial";
     }
 
     public static String mainSkySpartial() {
-        return "sky";
+        return "skySpartial";
     }
 
     public static String mainSkyTextureWest() {
@@ -39,7 +39,7 @@ public class MainData {
     }
 
     public static String nameProtagonistSpartial() {
-        return "protagonist";
+        return "protagonistSpartial";
     }
 
     public static String nameProtagonistNode() {
@@ -49,17 +49,14 @@ public class MainData {
     public static String nameCameraNode() {
         return "cameraNode";
     }
-    
-    public static String protagonist = "boy";
 
-    public static String mainProtagonistAsset() {
-        switch (protagonist) {
-            case "boy":
-                return "Models/boy/boy.j3o";
-            case "girl":
-                return "Models/girl/girl.j3o";
-            default:
-                throw new IllegalStateException("Protagonistmodel for " + protagonist + " do not exist");
-        }
+    public static String protagonist = "protagonist";
+
+    public static String boyProtagonistAsset() {
+        return "Models/boy/boy.j3o";
+    }
+
+    public static String girlProtagonistAsset() {
+        return "Models/girl/girl.j3o";
     }
 }

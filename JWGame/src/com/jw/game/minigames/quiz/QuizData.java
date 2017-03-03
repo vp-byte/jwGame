@@ -7,14 +7,11 @@ public class QuizData {
     }
     public static String protagonist = "boy";
 
-    public static String mainProtagonistAsset() {
-        switch (protagonist) {
-            case "boy":
-                return "Models/boy/boy.j3o";
-            case "girl":
-                return "Models/girl/girl.j3o";
-            default:
-                throw new IllegalStateException("Protagonistmodel for " + protagonist + " do not exist");
-        }
+    public static String protagonistAssetBoy() {
+        return "Models/boy/boy.j3o";
+    }
+
+    public static String protagonistAssetGirl() {
+        return "Models/girl/girl.j3o";
     }
 }

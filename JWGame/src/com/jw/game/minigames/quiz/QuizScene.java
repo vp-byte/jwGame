@@ -8,7 +8,6 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.input.InputManager;
 import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -31,8 +30,10 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     private InputManager inputManager;
     private Node rootNode;
     private Spatial scene;
-    private Spatial protagonist;
+    private Spatial protagonistBoy;
     private QuizAnimationControl animationControlBoy;
+    private Spatial protagonistGirl;
+    private QuizAnimationControl animationControlGirl;
     private final Nifty nifty;
     private Screen screen;
     private final QuizService quizService;
@@ -54,9 +55,10 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         this.inputManager = this.app.getInputManager();
         this.rootNode = this.app.getRootNode();
 
-        addBoy();
-
         addScene();
+        addBoy();
+        addGirl();
+
         nifty.fromXml("Interface/quiz/quiz.xml", "quizScreen", this);
         this.app.getFlyByCamera().setEnabled(false);
         inputManager.setCursorVisible(true);
@@ -81,15 +83,29 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     }
 
     public void addBoy() {
-        protagonist = assetManager.loadModel(MainData.mainProtagonistAsset());
-        protagonist.setName(MainData.nameProtagonistSpartial());
-        rootNode.attachChild(protagonist);
+        protagonistBoy = assetManager.loadModel(QuizData.protagonistAssetBoy());
+        protagonistBoy.setName(MainData.nameProtagonistSpartial());
+        rootNode.attachChild(protagonistBoy);
 
-        animationControlBoy = new QuizAnimationControl("boy");
-        protagonist.addControl(animationControlBoy);
+        animationControlBoy = new QuizAnimationControl("protagonist");
+        protagonistBoy.addControl(animationControlBoy);
 
-        protagonist.rotate(0.0f, 200 * FastMath.DEG_TO_RAD, 0.0f);
-        protagonist.setLocalTranslation(1.7f, 0f, 1.2f);
+        protagonistBoy.rotate(0.0f, 200 * FastMath.DEG_TO_RAD, 0.0f);
+        protagonistBoy.setLocalTranslation(1.7f, 0.1f, 1.2f);
+        protagonistBoy.scale(0.8f);
+    }
+
+    public void addGirl() {
+        protagonistGirl = assetManager.loadModel(QuizData.protagonistAssetGirl());
+        protagonistGirl.setName(MainData.nameProtagonistSpartial());
+        rootNode.attachChild(protagonistGirl);
+
+        animationControlGirl = new QuizAnimationControl("protagonist");
+        protagonistGirl.addControl(animationControlGirl);
+
+        protagonistGirl.rotate(0.0f, 160 * FastMath.DEG_TO_RAD, 0.0f);
+        protagonistGirl.setLocalTranslation(-1.7f, 0.1f, 1.2f);
+        protagonistGirl.scale(0.8f);
     }
 
     @Override
@@ -120,7 +136,8 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         Quiz quiz = quizlist.get(0);
         if (answer.equalsIgnoreCase(quiz.getRight().name())) {
             // TODO play congratulation cinematics
-            animationControlBoy.right();                    
+            animationControlBoy.right();
+            animationControlGirl.right();
             System.err.println("play congratulation cinematics");
             // ***********************************
             if (quizlist.size() >= 1) {
@@ -133,6 +150,7 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         } else {
             // TODO play wrong answer cinematics
             animationControlBoy.wrong();
+            animationControlGirl.wrong();
             System.err.println("play wrong cinematics");
             // *********************************
         }

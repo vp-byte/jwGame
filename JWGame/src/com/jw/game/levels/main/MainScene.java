@@ -87,7 +87,7 @@ public class MainScene extends AbstractAppState {
 
     public void addProtagonist() {
         protagonistNode = new Node(MainData.nameProtagonistNode());
-        protagonist = assetManager.loadModel(MainData.mainProtagonistAsset());
+        protagonist = assetManager.loadModel(MainData.boyProtagonistAsset());
         protagonist.setName(MainData.nameProtagonistSpartial());
         protagonistNode.attachChild(protagonist);
         rootNode.attachChild(protagonistNode);
