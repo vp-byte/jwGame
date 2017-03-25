@@ -2,7 +2,7 @@ How to work with bmfont?
 
 Star bmfont64.exe (with wine on Linux system)
 Select in the bmfont all characters you need
-Options -> Save as bitmap font as...
+Options -> Save bitmap font as...
 Give a name for your font file, with *.fnt as file extension
 
 You see two or more generated files:

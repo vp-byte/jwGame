@@ -6,6 +6,8 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
+import com.jme3.audio.AudioData;
+import com.jme3.audio.AudioNode;
 import com.jme3.input.InputManager;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
@@ -40,6 +42,7 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     private List<Quiz> quizlist = null;
     private final Vector3f camLocation = new Vector3f(0f, 1.2f, -2.85f);
     private final Vector3f camDirection = new Vector3f(0.0f, 0.0f, 1.0f);
+    private AudioNode music;
 
     public QuizScene(Nifty nifty) {
         this.nifty = nifty;
@@ -57,6 +60,7 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         this.quizlist = this.quizService.getAllQuizByDifficulty(Difficulty.values());
 
         addScene();
+        addMusic();
         addBoy();
         addGirl();
 
@@ -81,6 +85,15 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         scene = assetManager.loadModel(QuizData.quizSceneAsset());
         scene.setName(MainData.mainSceneSpartial());
         this.rootNode.attachChild(scene);
+    }
+
+    private void addMusic() {
+        music = new AudioNode(assetManager, "Sounds/songs/song141.ogg", AudioData.DataType.Stream);
+        music.setLooping(true);
+        music.setPositional(true);
+        music.setVolume(3);
+        rootNode.attachChild(music);
+        music.play();
     }
 
     public void addBoy() {
