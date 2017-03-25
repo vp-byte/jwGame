@@ -9,12 +9,17 @@ import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class QuizAnimationControl extends AbstractControl implements AnimEventListener {
 
     private final String spartialName;
     private AnimControl control;
     private AnimChannel channel;
+    private List<String> goodAnims = Arrays.asList("good_veryeasy", "good_easy", "good_normal", "good_hard");
+    private List<String> badAnims = Arrays.asList("bad_veryeasy", "bad_easy", "bad_normal", "bad_hard");
     private String animationName = "stand";
 
     public QuizAnimationControl(String spartialName) {
@@ -22,11 +27,13 @@ public class QuizAnimationControl extends AbstractControl implements AnimEventLi
     }
 
     public void right() {
-        animationName = "walk";
+        Collections.shuffle(goodAnims);
+        animationName = goodAnims.get(0);
     }
 
     public void wrong() {
-        animationName = "run";
+        Collections.shuffle(badAnims);
+        animationName = badAnims.get(0);
     }
 
     @Override
@@ -65,7 +72,7 @@ public class QuizAnimationControl extends AbstractControl implements AnimEventLi
 
     @Override
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-        if (animName.equals("walk") || animName.equals("run")) {
+        if (!animName.equals("stand")) {
             animationName = "stand";
         }
     }

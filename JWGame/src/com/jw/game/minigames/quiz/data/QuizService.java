@@ -1,13 +1,20 @@
 package com.jw.game.minigames.quiz.data;
 
+import com.jme3.asset.AssetManager;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class QuizService {
 
+    private final AssetManager assetManager;
     List<Quiz> quizlist = null;
 
-    public QuizService() {
+    public QuizService(AssetManager assetManager) {
+        this.assetManager = assetManager;
         quizlist = loadFromFile();
     }
 
@@ -21,26 +28,38 @@ public class QuizService {
 
     public List<Quiz> getAllQuizByDifficulty(Difficulty... difficulties) {
         List<Quiz> quizs = new ArrayList<>();
-        for (Quiz quiz : quizlist) {
+        quizlist.stream().forEach((quiz) -> {
             for (Difficulty difficulty : difficulties) {
                 if (quiz.getDifficulty() == difficulty) {
                     quizs.add(quiz);
                 }
             }
-        }
+        });
         return quizs;
     }
 
-    public List<Quiz> loadFromFile() {
-        // TODO load data from file (win/linux/mac/android)
-        return parseLineList(QuizData.lines());
+    private List<Quiz> loadFromFile() {
+        QuizDataLoader quizDataLoader = new QuizDataLoader(assetManager);
+        
+        try {
+            Locale.setDefault(Locale.GERMANY);
+            Locale locale = Locale.getDefault();
+            System.err.println(locale);
+            if(locale.toString().equals("en_US")){
+                
+            } 
+            return parseLineList(quizDataLoader.load("/Files/questions_ru"));
+        } catch (IOException ex) {
+            Logger.getLogger(QuizService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     public List<Quiz> parseLineList(List<String> lines) {
         List<Quiz> quizs = new ArrayList<>();
-        for (String line : lines) {
+        lines.stream().forEach((line) -> {
             quizs.add(parseLine(line));
-        }
+        });
         return quizs;
     }
 

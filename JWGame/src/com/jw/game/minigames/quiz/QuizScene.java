@@ -36,15 +36,13 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     private QuizAnimationControl animationControlGirl;
     private final Nifty nifty;
     private Screen screen;
-    private final QuizService quizService;
+    private QuizService quizService;
     private List<Quiz> quizlist = null;
     private final Vector3f camLocation = new Vector3f(0f, 1.2f, -2.85f);
     private final Vector3f camDirection = new Vector3f(0.0f, 0.0f, 1.0f);
 
     public QuizScene(Nifty nifty) {
         this.nifty = nifty;
-        this.quizService = new QuizService();
-        this.quizlist = this.quizService.getAllQuizByDifficulty(Difficulty.values());
     }
 
     @Override
@@ -54,6 +52,9 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         this.assetManager = this.app.getAssetManager();
         this.inputManager = this.app.getInputManager();
         this.rootNode = this.app.getRootNode();
+
+        this.quizService = new QuizService(assetManager);
+        this.quizlist = this.quizService.getAllQuizByDifficulty(Difficulty.values());
 
         addScene();
         addBoy();
@@ -135,30 +136,29 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     public void answer(String answer) {
         Quiz quiz = quizlist.get(0);
         if (answer.equalsIgnoreCase(quiz.getRight().name())) {
-            // TODO play congratulation cinematics
             animationControlBoy.right();
             animationControlGirl.right();
-            System.err.println("play congratulation cinematics");
-            // ***********************************
-            if (quizlist.size() >= 1) {
-                removeQuizFromList(quizlist.get(0));
-                setQuiz(nextQuiz());
+
+            removeQuizFromList(quizlist.get(0));
+            Quiz newQuiz = nextQuiz();
+            if (newQuiz != null) {
+                setQuiz(newQuiz);
             } else {
-                System.err.println("Game over");
-                // TODO game over
+                System.exit(0);
             }
         } else {
-            // TODO play wrong answer cinematics
             animationControlBoy.wrong();
             animationControlGirl.wrong();
-            System.err.println("play wrong cinematics");
-            // *********************************
         }
     }
 
     private Quiz nextQuiz() {
         Collections.shuffle(quizlist);
-        return quizlist.get(0);
+        if (quizlist.size() > 0) {
+            return quizlist.get(0);
+        } else {
+            return null;
+        }
     }
 
     private void setQuiz(Quiz quiz) {

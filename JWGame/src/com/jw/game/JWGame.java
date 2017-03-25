@@ -54,11 +54,11 @@ public class JWGame extends SimpleApplication implements ScreenController {
 
     @Override
     public void simpleUpdate(float tpf) {
-        if (!test) {
+        /*if (!test) {
             test = true;
             stateManager.detach(mainScene);
             stateManager.attach(quizScene);
-        }
+        }*/
     }
 
     @Override
