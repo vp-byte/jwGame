@@ -6,11 +6,30 @@
     <useStyles filename="Interface/quiz/quizButtonStyle.xml"/>
     <screen id="quizScreen" controller="com.jw.game.minigames.quiz.QuizScene">
         <layer id="quizLayer" childLayout="vertical">
-            <panel id="qiuzPanelTopSpace" childLayout="vertical" width="100%" align="center" height="15%"/>
+            <panel id="qiuzPanelTopSpace" childLayout="horizontal" width="100%" align="center" height="15%">
+                <panel id="qiuzPanelTopLivePos0" childLayout="horizontal" width="5%" valign="center" align="right" height="50%">
+                    <panel id="qiuzPanelTopLive0" backgroundImage="Textures/quiz/book.png"childLayout="horizontal" width="90%" height="90%" valign="center" align="center" >
+                    </panel>
+                </panel>
+                <panel id="qiuzPanelTopLivePos1" childLayout="horizontal" width="5%" valign="center" align="right" height="50%">
+                    <panel id="qiuzPanelTopLive1" backgroundImage="Textures/quiz/book.png"childLayout="horizontal" width="90%" height="90%" valign="center" align="center" >
+                    </panel>
+                </panel>
+                <panel id="qiuzPanelTopLivePos2" childLayout="horizontal" width="5%" valign="center" align="right" height="50%">
+                    <panel id="qiuzPanelTopLive2" backgroundImage="Textures/quiz/book.png"childLayout="horizontal" width="90%" height="90%" valign="center" align="center" >
+                    </panel>
+                </panel>     
+                <panel id="qiuzPanelTopPoints" childLayout="horizontal" width="75%" valign="center" align="right" height="50%">
+                </panel>
+                <panel id="qiuzPanelTopLive" childLayout="horizontal" width="10%" valign="center" align="left" height="50%">
+                    <text id="pointsText" style="nifty-label" font="Interface/Fonts/bmfontpoints.fnt" height="100%" width="100%"
+                          text="0" textHAlign="center" textVAlign="center"/>
+                </panel>    
+            </panel>
             <panel id="qiuzPanelCenter" childLayout="vertical" width="40%" align="center" height="40%">
                 <text id="quizText" width="100%" height="100%" textVAlign="top" textHAlign="center" wrap="true"
                       font="Interface/Fonts/bmfont.fnt" 
-                      text="Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос Question Вопрос" />
+                      text="Question Вопрос" />
             </panel>
             <panel id="quizPanelCenterSpace" width="100%" align="center" height="15%"/>
             <panel id="quizPanelBottom" childLayout="vertical" width="100%" align="center" height="25%">
@@ -41,4 +60,27 @@
             </panel>
         </layer>
     </screen>
+    <popup id="gameover" childLayout="center" backgroundColor="#000a">
+        <panel id="gameoverPanel" childLayout="vertical" width="30%" height="40%" align="center" >
+            <text id="gameOverText" width="100%" height="50%" textVAlign="center" textHAlign="center" wrap="true"
+                  font="Interface/Fonts/bmfont.fnt" 
+                  text="GAME OVER" />
+        </panel>
+        <panel id="gameoverPanelButtons" childLayout="horizontal" width="100%" align="center" height="50%">
+            <panel id="gameoverLeftButton" childLayout="center" width="50%" height="30%" valign="center" >
+                <control name="button" id="buttonRestart" width="50%" style="quiz-button" valign="center" label="RESTART" align="right" height="60%">
+                    <interact onClick="restart()" />
+                </control>
+            </panel>
+            <panel id="gameoverRightButton" childLayout="center" width="50%" height="30%" valign="center">
+                <control name="button" id="buttonExit" width="50%" style="quiz-button" valign="center" label="EXIT" align="left" height="60%">
+                    <interact onClick="exit()" />
+                </control>
+            </panel>
+        </panel>        
+    </popup>
+    <popup id="medal" childLayout="center" backgroundColor="#000a">
+        <panel id="qiuzPanelTopLive0" backgroundImage="Textures/quiz/medals/gold.png"childLayout="horizontal" width="90%" height="90%" valign="center" align="center" >
+        </panel>
+    </popup>
 </nifty>

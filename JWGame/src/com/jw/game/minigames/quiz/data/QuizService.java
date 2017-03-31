@@ -40,15 +40,21 @@ public class QuizService {
 
     private List<Quiz> loadFromFile() {
         QuizDataLoader quizDataLoader = new QuizDataLoader(assetManager);
-        
+
         try {
             Locale.setDefault(Locale.GERMANY);
             Locale locale = Locale.getDefault();
-            System.err.println(locale);
-            if(locale.toString().equals("en_US")){
-                
-            } 
-            return parseLineList(quizDataLoader.load("/Files/questions_ru"));
+            String language = locale.toString().substring(0, 2);
+            switch (language) {
+                case "de":
+                case "ru":
+                    language = "questions_" + language;
+                    break;
+                default:
+                    language = "questions";
+            }
+            language = "questions_ru";
+            return parseLineList(quizDataLoader.load("Files/" + language));
         } catch (IOException ex) {
             Logger.getLogger(QuizService.class.getName()).log(Level.SEVERE, null, ex);
         }

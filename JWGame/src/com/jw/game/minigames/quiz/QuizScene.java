@@ -27,6 +27,8 @@ import java.util.List;
 
 public class QuizScene extends AbstractAppState implements ScreenController {
 
+    private int live = 3;
+    private int points = 0;
     private SimpleApplication app;
     private AssetManager assetManager;
     private InputManager inputManager;
@@ -43,6 +45,8 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     private final Vector3f camLocation = new Vector3f(0f, 1.2f, -2.85f);
     private final Vector3f camDirection = new Vector3f(0.0f, 0.0f, 1.0f);
     private AudioNode music;
+    private Element gameoverPopup;
+    private Element medalPopup;
 
     public QuizScene(Nifty nifty) {
         this.nifty = nifty;
@@ -88,10 +92,10 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     }
 
     private void addMusic() {
-        music = new AudioNode(assetManager, "Sounds/songs/song141.ogg", AudioData.DataType.Stream);
+        music = new AudioNode(assetManager, "Sounds/quiz/songs/song141.ogg", AudioData.DataType.Stream);
         music.setLooping(true);
         music.setPositional(true);
-        music.setVolume(3);
+        music.setVolume(100);
         rootNode.attachChild(music);
         music.play();
     }
@@ -156,12 +160,19 @@ public class QuizScene extends AbstractAppState implements ScreenController {
             Quiz newQuiz = nextQuiz();
             if (newQuiz != null) {
                 setQuiz(newQuiz);
+                points++;
+                setPointsText(points);
             } else {
                 System.exit(0);
             }
         } else {
             animationControlBoy.wrong();
             animationControlGirl.wrong();
+            live--;
+            liveItem(live, false);
+            if (live < 1) {
+                gameOver();
+            }
         }
     }
 
@@ -182,10 +193,14 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         setButtonText("buttonD", quiz.getAnswer_d());
     }
 
+    private void removeQuizFromList(Quiz quiz) {
+        quizlist.remove(quiz);
+    }
+
     private void setQuizText(String text) {
         Element quizText = screen.findElementById("quizText");
         if (quizText == null) {
-            throw new IllegalStateException("QuizText with id=quizText not found");
+            throw new IllegalStateException("Textcontrol with id = quizText not found");
         }
         TextRenderer textRenderer = quizText.getRenderer(TextRenderer.class);
         if (textRenderer == null) {
@@ -197,12 +212,79 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     private void setButtonText(String buttonId, String text) {
         Button button = screen.findNiftyControl(buttonId, Button.class);
         if (button == null) {
-            throw new IllegalStateException("Button with id=" + buttonId + " not found");
+            throw new IllegalStateException("Button with id = " + buttonId + " not found");
         }
         button.setText(text);
     }
 
-    private void removeQuizFromList(Quiz quiz) {
-        quizlist.remove(quiz);
+    private void liveItem(int live, boolean show) {
+        Element element = screen.findElementById("qiuzPanelTopLive" + live);
+        if (element == null) {
+            throw new IllegalStateException("Element with id = qiuzPanelTopLive" + live + " not found");
+        }
+        if (show) {
+            element.show();
+        } else {
+            element.hide();
+        }
     }
+
+    private void setPointsText(int points) {
+        Element quizText = screen.findElementById("pointsText");
+        if (quizText == null) {
+            throw new IllegalStateException("Textcontrol with id = pointsText not found");
+        }
+        TextRenderer textRenderer = quizText.getRenderer(TextRenderer.class);
+        if (textRenderer == null) {
+            throw new IllegalStateException("TextRenderer from pointsText not found");
+        }
+        textRenderer.setText("" + points);
+    }
+
+    private void gameWon() {
+        medalPopup = nifty.createPopup("medal");
+        String popupId = medalPopup.getId();
+        nifty.showPopup(screen, popupId, null);
+    }
+
+    private void gameOver() {
+        gameoverPopup = nifty.createPopup("gameover");
+        String popupId = gameoverPopup.getId();
+        nifty.showPopup(screen, popupId, null);
+    }
+
+    public void restart() {
+        this.quizlist = this.quizService.getAllQuizByDifficulty(Difficulty.values());
+        live = 3;
+        for (int i = 0; i < live; i++) {
+            liveItem(i, true);
+        }
+        points = 0;
+        String popupId = gameoverPopup.getId();
+        nifty.closePopup(popupId);
+    }
+
+    public void exit() {
+
+        System.exit(0);
+    }
+
+    private void closeMedalPopup() {
+        if (gameoverPopup != null) {
+            String gameoverPopupId = gameoverPopup.getId();
+            if (gameoverPopupId != null) {
+                nifty.closePopup(gameoverPopupId);
+            }
+        }
+    }
+
+    private void closeGameoverPopup() {
+        if (medalPopup != null) {
+            String medalPopupId = medalPopup.getId();
+            if (medalPopupId != null) {
+                nifty.closePopup(medalPopupId);
+            }
+        }
+    }
+
 }

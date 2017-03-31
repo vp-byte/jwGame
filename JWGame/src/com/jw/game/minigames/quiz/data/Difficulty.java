@@ -2,11 +2,10 @@ package com.jw.game.minigames.quiz.data;
 
 public enum Difficulty {
 
-    VERYEASY,
+    FUNNY,
     EASY,
     NORMAL,
-    HARD,
-    VERYHARD;
+    HARD;
 
     public static Difficulty parseIgnoreCase(String value) {
         for(Difficulty difficulty : Difficulty.values()) {
