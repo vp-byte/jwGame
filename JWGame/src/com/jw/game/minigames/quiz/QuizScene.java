@@ -19,7 +19,9 @@ import com.jw.game.minigames.quiz.data.QuizService;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.controls.Button;
 import de.lessvoid.nifty.elements.Element;
+import de.lessvoid.nifty.elements.render.ImageRenderer;
 import de.lessvoid.nifty.elements.render.TextRenderer;
+import de.lessvoid.nifty.render.NiftyImage;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.Collections;
@@ -46,7 +48,6 @@ public class QuizScene extends AbstractAppState implements ScreenController {
     private final Vector3f camDirection = new Vector3f(0.0f, 0.0f, 1.0f);
     private AudioNode music;
     private Element gameoverPopup;
-    private Element medalPopup;
 
     public QuizScene(Nifty nifty) {
         this.nifty = nifty;
@@ -61,7 +62,8 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         this.rootNode = this.app.getRootNode();
 
         this.quizService = new QuizService(assetManager);
-        this.quizlist = this.quizService.getAllQuizByDifficulty(Difficulty.values());
+
+        initQuizList();
 
         addScene();
         addMusic();
@@ -82,6 +84,26 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         }
         if (!this.app.getCamera().getDirection().equals(camDirection)) {
             this.app.getCamera().lookAtDirection(camDirection, Vector3f.UNIT_Y);
+        }
+    }
+
+    private void initQuizList() {
+        switch (points) {
+            case 0:
+                this.quizlist = this.quizService.getAllQuizByDifficulty(Difficulty.EASY);
+                break;
+            case 10:
+                this.quizlist = this.quizService.getAllQuizByDifficulty(Difficulty.NORMAL);
+                break;
+            case 20:
+                this.quizlist = this.quizService.getAllQuizByDifficulty(Difficulty.HARD);
+                break;
+            case 30:
+                this.quizlist = this.quizService.getAllQuizByDifficulty(Difficulty.FUNNY);
+                break;
+            default:
+                this.quizlist = this.quizService.getAllQuizByDifficulty(Difficulty.values());
+                break;
         }
     }
 
@@ -157,6 +179,8 @@ public class QuizScene extends AbstractAppState implements ScreenController {
             animationControlGirl.right();
 
             removeQuizFromList(quizlist.get(0));
+            
+            initQuizList();
             Quiz newQuiz = nextQuiz();
             if (newQuiz != null) {
                 setQuiz(newQuiz);
@@ -241,16 +265,36 @@ public class QuizScene extends AbstractAppState implements ScreenController {
         textRenderer.setText("" + points);
     }
 
-    private void gameWon() {
-        medalPopup = nifty.createPopup("medal");
-        String popupId = medalPopup.getId();
-        nifty.showPopup(screen, popupId, null);
-    }
-
     private void gameOver() {
         gameoverPopup = nifty.createPopup("gameover");
         String popupId = gameoverPopup.getId();
-        nifty.showPopup(screen, popupId, null);
+        if (popupId != null) {
+            nifty.showPopup(screen, popupId, null);
+            NiftyImage niftyImage = nifty.getRenderEngine().createImage(screen, getMedalImagePathByPoints(), false);
+            Element imageElement = gameoverPopup.findElementById("gameoverImage");
+            if (imageElement != null) {
+                ImageRenderer imageRenderer = imageElement.getRenderer(ImageRenderer.class);
+                if (imageRenderer != null) {
+                    imageRenderer.setImage(niftyImage);
+                }
+            }
+        }
+    }
+
+    private String getMedalImagePathByPoints() {
+        String path;
+        if (points >= 4) {
+            path = "Textures/quiz/medals/diamond.png";
+        } else if (points >= 3) {
+            path = "Textures/quiz/medals/gold.png";
+        } else if (points >= 2) {
+            path = "Textures/quiz/medals/silver.png";
+        } else if (points >= 1) {
+            path = "Textures/quiz/medals/bronze.png";
+        } else {
+            path = "Textures/quiz/medals/null.png";
+        }
+        return path;
     }
 
     public void restart() {
@@ -260,29 +304,19 @@ public class QuizScene extends AbstractAppState implements ScreenController {
             liveItem(i, true);
         }
         points = 0;
-        String popupId = gameoverPopup.getId();
-        nifty.closePopup(popupId);
+        closeGameoverPopup();
     }
 
     public void exit() {
-
+        closeGameoverPopup();
         System.exit(0);
     }
 
-    private void closeMedalPopup() {
+    private void closeGameoverPopup() {
         if (gameoverPopup != null) {
             String gameoverPopupId = gameoverPopup.getId();
             if (gameoverPopupId != null) {
                 nifty.closePopup(gameoverPopupId);
-            }
-        }
-    }
-
-    private void closeGameoverPopup() {
-        if (medalPopup != null) {
-            String medalPopupId = medalPopup.getId();
-            if (medalPopupId != null) {
-                nifty.closePopup(medalPopupId);
             }
         }
     }
